@@ -20,32 +20,45 @@ class VideoController extends Controller
     public function store(Request $request)
     {
         // Valida la solicitud asegurando que se haya subido un archivo de tipo 'mp4'
+        // y validando los campos 'nombre' e 'idioma'
         $request->validate([
+            'nombre' => 'required|string|max:255',
+            'idioma' => 'required|in:es_es,es_lat,in,in_sub',
             'video' => 'required|file|mimes:mp4'
         ]);
 
         // Obtiene el archivo de video de la solicitud
-        $video = $request->file('video');
+        $videoFile = $request->file('video');
         // Almacena el archivo en el disco 'public' en la carpeta 'videos'
-        $path = $video->store('videos', 'public');
+        $path = $videoFile->store('videos', 'public');
 
-        // Tu validación y lógica de almacenamiento
-
+        // Crea un nuevo registro de video con los datos proporcionados
         $video = Video::create([
-            'title' => $video->getClientOriginalName(),
-            'path' => $path
+            'nombre' => $request->nombre, // Almacena el nombre del video
+            'idioma' => $request->idioma, // Almacena el idioma del video
+            'title' => $videoFile->getClientOriginalName(), // Almacena el título original del archivo
+            'path' => $path // Almacena la ruta del archivo
         ]);
 
         return response()->json(['id' => $video->id]);
     }
 
-    public function index()
+
+    public function index(Request $request)
     {
-        // Ordenar videos por id y paginar
-        $videos = Video::orderBy('id', 'desc')->paginate(5);
+        $query = Video::query();
+
+        // Si se recibe un término de búsqueda, filtrar los resultados
+        if ($search = $request->get('q')) {
+            $query->where('nombre', 'LIKE', '%' . $search . '%')
+                ->orWhere('title', 'LIKE', '%' . $search . '%'); // Puedes añadir más campos aquí
+        }
+
+        $videos = $query->orderBy('id', 'desc')->paginate(5);
 
         return view('videos.index', compact('videos'));
     }
+
 
     // Método para eliminar un video
     public function destroy(Video $video)
@@ -64,6 +77,38 @@ class VideoController extends Controller
     }
     public function embed(Video $video)
     {
+        // Verifica el referente de la solicitud
+        $referer = request()->headers->get('referer');
+        $allowedReferer = 'http://yaske.test'; // URL de tu sitio permitido
+
+        // Verificar si el referente contiene la URL permitida
+        if (strpos($referer, $allowedReferer) === false) {
+            // Si el referente no es el permitido, muestra una página de error o niega el acceso
+            return view('error.no-permission');
+        }
+
+        // Si el referente es válido, muestra la vista de embed
         return view('videos.embed', compact('video'));
+    }
+
+    public function play(Request $request, Video $video, $token)
+    {
+        // Verificar que el token proporcionado coincida con el token del video
+        if ($token !== $video->embed_token) {
+            abort(403);
+        }
+
+        // Opcionalmente, puedes limpiar el token aquí si solo debe ser usado una vez
+        // $video->embed_token = null;
+        // $video->save();
+
+        $videoPath = storage_path('app/public/' . $video->path);
+
+        if (!file_exists($videoPath)) {
+            abort(404, "El video no se encontró.");
+        }
+
+        // Servir el video directamente desde la ruta
+        return response()->file($videoPath);
     }
 }

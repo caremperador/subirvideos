@@ -24,6 +24,7 @@ Route::post('/videos', [VideoController::class, 'store'])->name('videos.store');
 Route::get('/videos', [VideoController::class, 'index'])->name('videos.index');
 Route::delete('/videos/{video}', [VideoController::class, 'destroy'])->name('videos.destroy');
 Route::get('/videos/{video}/embed', [VideoController::class, 'embed'])->name('videos.embed');
+Route::get('/videos/{video}/play/{token}', [VideoController::class, 'play'])->name('videos.play');
 
 
 Route::middleware([

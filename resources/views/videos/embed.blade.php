@@ -1,35 +1,52 @@
 {{-- videos/embed.blade.php --}}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Embed - {{ $video->title }}</title>
+    <!-- Incluir Tailwind CSS desde CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
-            height: 0;
-            overflow: hidden;
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden; /* Elimina la barra de desplazamiento */
         }
-        .video-container video {
-            position: absolute;
+        .video-container {
+            position: fixed; /* Cambiado de relative a fixed */
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
         }
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Asegura que el video cubra todo el espacio */
+        }
     </style>
 </head>
-<body>
+<body class="h-full">
+
+{{-- reproductor videos --}}
+
+@php
+    $newToken = Str::random(60); // Generar un nuevo token
+    $video->embed_token = $newToken; // Asignar el nuevo token al video
+    $video->save(); // Guardar el cambio en la base de datos
+
+    $playUrl = route('videos.play', ['video' => $video->id, 'token' => $newToken]);
+@endphp
 
 <div class="video-container">
     <video controls autoplay>
-        {{-- Asegúrate de que la URL aquí sea accesible y correcta --}}
-        <source src="{{ asset('storage/' . $video->path) }}" type="video/mp4">
+        <source src="{{ $playUrl }}" type="video/mp4">
         Tu navegador no soporta la etiqueta video.
     </video>
 </div>
+
 
 </body>
 </html>
