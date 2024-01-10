@@ -99,9 +99,9 @@ class VideoController extends Controller
     public function play(Request $request, Video $video, $token)
     {
         // Verificar que el token proporcionado coincida con el token del video
-        if ($token !== $video->embed_token) {
-            abort(403);
-        }
+        // if ($token !== $video->embed_token) {
+        //     abort(403);
+        // }
 
         // Opcionalmente, puedes limpiar el token aquí si solo debe ser usado una vez
         // $video->embed_token = null;
