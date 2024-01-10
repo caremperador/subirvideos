@@ -114,6 +114,9 @@ class VideoController extends Controller
         }
 
         // Servir el video directamente desde la ruta
-        return response()->file($videoPath);
+        return response()->file($videoPath, [
+            'Content-Type' => 'video/mp4',
+            'Content-Disposition' => 'inline; filename="' . $video->title . '"'
+        ]);
     }
 }
