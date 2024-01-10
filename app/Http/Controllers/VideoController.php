@@ -21,11 +21,16 @@ class VideoController extends Controller
     {
         // Valida la solicitud asegurando que se haya subido un archivo de tipo 'mp4'
         // y validando los campos 'nombre' e 'idioma'
-        $request->validate([
-            'nombre' => 'required|string|max:255',
-            'idioma' => 'required|in:es_es,es_lat,in,in_sub',
-            'video' => 'required|file|mimes:mp4'
-        ]);
+        try {
+            $request->validate([
+                'nombre' => 'required|string|max:255',
+                'idioma' => 'required|in:es_es,es_lat,in,in_sub',
+                'video' => 'required|file|mimes:mp4'
+            ]);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(['error' => $th->getMessage()]);
+        }
 
         // Obtiene el archivo de video de la solicitud
         $videoFile = $request->file('video');
