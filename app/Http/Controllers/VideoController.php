@@ -79,7 +79,7 @@ class VideoController extends Controller
     {
         // Verifica el referente de la solicitud
         $referer = request()->headers->get('referer');
-        $allowedReferer = 'http://yaske.test'; // URL de tu sitio permitido
+        $allowedReferer = 'http://yaske.test:8004'; // URL de tu sitio permitido
 
         // Verificar si el referente contiene la URL permitida
         if (strpos($referer, $allowedReferer) === false) {
