@@ -21,8 +21,8 @@ class UsuariosDemo extends Seeder
 
             ],
             [
-                'email' => 'jannet.rivero.pedemonte@gmail.com',
-                'name' => 'jannet',
+                'email' => 'admin@admin.com',
+                'name' => 'admin',
                 'password' => bcrypt('14e30s15b'), // Usamos bcrypt para encriptar la contraseña
 
             ],

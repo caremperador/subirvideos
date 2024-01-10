@@ -1,0 +1,514 @@
+#!/bin/bash
+
+function print_help {
+    echo 'Modo de uso: doravel [COMMAND] [OPTIONS]
+
+DORAVEL COMMANDS:
+    x                  Ejecuta un comando en la imagen de doravel
+    sh                 Abre el terminal sh de doravel
+    fix                Corrige los permisos de los archivos
+    cmd                ejecuta un comando en el contenedor de laravel
+    new                Crea un nuevo proyecto de laravel
+    test               Inicia el entorno de pruebas
+    init               Inicia un proyecto con doravel
+    tinker             Abre el terminal tinker de laravel
+    reload             Reinicia el contenedor de laravel
+    install            Instala doravel globalmente
+    artisan            Ejecuta un comando artisan
+    composer           Ejecuta un comando composer
+    installer          Crea un instalador de doravel
+    supervisor         Ejecuta un comando supervisorctl
+    logging            Muestra los logs de laravel
+    global             Instala el comando doravel globalmente
+    upgrade            Actualiza doravel a la ultima version globalmente
+    update             Actualiza doravel a la ultima version localmente
+    ssh-keys           Genera las llaves ssh para el deploy
+
+DOCKER-COMPOSE COMMANDS:
+    build       Build or rebuild services
+    config      Parse, resolve and render compose file in canonical format
+    cp          Copy files/folders between a service container and the local filesystem
+    create      Creates containers for a service.
+    down        Stop and remove containers, networks
+    events      Receive real time events from containers.
+    exec        Execute a command in a running container.
+    images      List images used by the created containers
+    kill        Force stop service containers.
+    logs        View output from containers
+    ls          List running compose projects
+    pause       Pause services
+    port        Print the public port for a port binding.
+    ps          List containers
+    pull        Pull service images
+    push        Push service images
+    restart     Restart service containers
+    rm          Removes stopped service containers
+    run         Run a one-off command on a service.
+    start       Start services
+    stop        Stop services
+    top         Display the running processes
+    unpause     Unpause services
+    up          Create and start containers
+    version     Show the Docker Compose version information
+    wait        Block until the first service container stops
+
+OPTIONS:
+    -e | --env     .env file to use
+    -h | --help    show this help
+    -v | --version show version
+
+'
+}
+
+ENDPOINT="https://raw.githubusercontent.com/byancode/doravel/main"
+
+if [ "$1" == "" ]; then
+    print_help
+    exit 0
+fi
+
+if [ "$1" == "--help" ] || [ "$1" == "-h" ]; then
+    print_help
+    exit 0
+fi
+
+COMMAND="$1"
+
+if [ $COMMAND == "" ]; then
+    echo "Running doravel..."
+fi
+
+COMMANDS=(
+# doravel commands
+    "x" # image byancode/doravel
+    "a" # artisan
+    "c" # composer
+    "s" # supervisor
+    "l" # logging
+    "sh"
+    "fix"
+    "cmd"
+    "new"
+    "test"
+    "init"
+    "bash"
+    "tinker"
+    "update"
+    "global"
+    "reload"
+    "install"
+    "artisan"
+    "logging"
+    "upgrade"
+    "composer"
+    "ssh-keys"
+    "installer"
+    "supervisor"
+# docker-compose commands
+    "build"
+    "config"
+    "create"
+    "down"
+    "events"
+    "exec"
+    "help"
+    "images"
+    "kill"
+    "logs"
+    "pause"
+    "port"
+    "ps"
+    "pull"
+    "push"
+    "restart"
+    "rm"
+    "run"
+    "scale"
+    "start"
+    "stop"
+    "top"
+    "unpause"
+    "up"
+    "version"
+)
+
+# exit if command not exists
+if [[ ! " ${COMMANDS[@]} " =~ " ${COMMAND} " ]]; then
+    echo "Command not found"
+    exit 0
+fi
+
+# comandos que no requiere de un .env
+
+if [ $COMMAND == "init" ]; then
+    echo "Initializing doravel..."
+    read -p "Do you want to initialize doravel? [y/n] " RESPOSE
+    if [ "$RESPOSE" == "y" ]; then
+        bash <(curl $ENDPOINT/scripts/init)
+    fi
+    exit 0
+fi
+
+if [ $COMMAND == "install" ]; then
+    echo "Installing doravel..."
+    bash <(curl $ENDPOINT/scripts/install)
+    echo "Doravel installed 😃"
+    if [ ! -d "./bootstrap" ] || [ ! -d "./storage" ]; then
+        exit 0
+    fi
+    if [ ! -d "./vendor" ]; then
+        composer install
+    fi
+    exit 0
+fi
+
+if [ $COMMAND == "installer" ]; then
+    echo "Creating doravel installer..."
+    bash <(curl $ENDPOINT/scripts/installer)
+    exit 0
+fi
+
+if [ $COMMAND == "fix" ]; then
+    if [ ! -d "./bootstrap" ] || [ ! -d "./storage" ]; then
+        echo "the current directory is not a laravel project"
+        exit 0
+    fi
+    sudo chown -R $(id -un):$(id -gn) ./bootstrap/cache
+    sudo chown -R $(id -un):$(id -gn) ./storage
+    echo "Permissions fixed 😃"
+    exit 0
+fi
+
+if [ $COMMAND == "new" ]; then
+    if [ "$2" == "" ]; then
+        read -p "Enter the name of the new project: " DIRECTORY
+    else
+        DIRECTORY="$2"
+    fi
+    shift
+    shift
+    echo "Creating new laravel project..."
+    composer create-project laravel/laravel $DIRECTORY
+    cd $DIRECTORY
+    doravel init
+    echo "Laravel project created 😃"
+    exit 0
+fi
+
+if [ $COMMAND == "upgrade" ]; then
+    echo "Upgrading doravel..."
+
+    if [ ! -d ~/bin ]; then
+        mkdir ~/bin
+    fi
+
+    curl -s "$ENDPOINT/bin/doravel" -o ~/bin/doravel
+    curl -s "$ENDPOINT/bin/dlocal" -o ~/bin/dlocal
+    curl -s "$ENDPOINT/bin/dtest" -o ~/bin/dtest
+    curl -s "$ENDPOINT/bin/dprod" -o ~/bin/dprod
+    curl -s "$ENDPOINT/bin/dmain" -o ~/bin/dmain
+
+    chmod +x ~/bin/doravel
+    chmod +x ~/bin/dlocal
+    chmod +x ~/bin/dtest
+    chmod +x ~/bin/dprod
+    chmod +x ~/bin/dmain
+
+    ln -sf ~/bin/doravel ~/bin/dv
+
+    if [ -f ./doravel ]; then
+        cp -f ~/bin/doravel ./doravel
+    fi
+
+    echo "Doravel installed 😃"
+    exit 0
+fi
+
+if [ $COMMAND == "update" ]; then
+    if [ ! -f ./doravel ]; then
+        echo "the current directory is not a laravel project"
+        exit 0
+    fi
+
+    echo "Updating doravel..."
+    curl "$ENDPOINT/bin/doravel" -o doravel
+    chmod +x ./doravel
+
+    echo "Doravel updated 😃"
+    exit 0
+fi
+
+if [ $COMMAND == "global" ]; then
+    if [ ! -f ./doravel ]; then
+        echo "the current directory is not a laravel project"
+        exit 0
+    fi
+    if [ ! -d ~/bin ]; then
+        mkdir ~/bin
+    fi
+    echo "Installing doravel globally..."
+
+    cp -f ./doravel ~/bin/doravel
+    chmod +x ~/bin/doravel
+    ln -sf ~/bin/doravel ~/bin/dv
+
+    echo "Doravel installed 😃"
+    exit 0
+fi
+
+if [ $COMMAND == "ssh-keys" ]; then
+    echo "Generating ssh keys..."
+    if [ ! -d ./storage/.ssh ]; then
+        mkdir ./storage/.ssh
+    fi
+    email=$(git config --global user.email)
+    ssh-keygen -t rsa -b 4096 -C "$email" -f ./storage/.ssh/id_rsa -q -N ""
+    chmod 600 ./storage/.ssh/id_rsa
+
+    echo ""
+    echo "##🔑 SSH key generated 🔑##"
+    echo ""
+    cat ./storage/.ssh/id_rsa.pub
+    echo ""
+    echo ""
+    echo "⚠️⚠️ IMPORTANTE ⚠️⚠️"
+    echo "No olvide agregar la clave pública a su repositorio de GitHub!"
+    echo "👇️ Documentacion de DEPLOY KEYS 👇️"
+    echo ""
+    echo "https://docs.github.com/es/developers/overview/managing-deploy-keys#deploy-keys"
+    echo ""
+
+    exit 0
+fi
+
+
+if [ ! -d "./app" ] || [ ! -f "./.env" ]; then
+    echo "the current directory is not a laravel project"
+    exit 0
+fi
+# comandos que requieren de un .env
+
+ENV_FILE=".env"
+ENV_NAME="local"
+DCP_NAME="docker-compose"
+
+# if [ ! -f "$DCP_NAME.yml" ]; then
+#     echo "this project does not have a docker-compose.yml file"
+#     exit 1
+# fi
+
+OPTIONS=''
+while [ "$#" -gt 0 ]; do
+    case "$2" in
+        -e | --env)
+            ENV_NAME="$3"
+            ENV_FILE=".env.$ENV_NAME"
+            shift 2
+            ;;
+        --local)
+            ENV_NAME="local"
+            ENV_FILE=".env.$ENV_NAME"
+            shift
+            ;;
+        --test)
+            ENV_NAME="test"
+            ENV_FILE=".env.$ENV_NAME"
+            shift
+            ;;
+        --testing)
+            ENV_NAME="testing"
+            ENV_FILE=".env.$ENV_NAME"
+            shift
+            ;;
+        --dev)
+            ENV_NAME="dev"
+            ENV_FILE=".env.$ENV_NAME"
+            shift
+            ;;
+        --development)
+            ENV_NAME="development"
+            ENV_FILE=".env.$ENV_NAME"
+            shift
+            ;;
+        --prod)
+            ENV_NAME="prod"
+            ENV_FILE=".env.$ENV_NAME"
+            shift
+            ;;
+        --production)
+            ENV_NAME="production"
+            ENV_FILE=".env.$ENV_NAME"
+            shift
+            ;;
+        --main)
+            ENV_NAME="main"
+            ENV_FILE=".env.$ENV_NAME"
+            shift
+            ;;
+        *)
+            if [[ "$2" == "--" ]] || [[ "$2" =~ ^- ]]; then
+                OPTIONS="$OPTIONS $2"
+                shift
+                continue
+            fi
+            OPTIONS="$OPTIONS $2"
+            shift
+            ;;
+    esac
+done
+
+if [ "$ENV_NAME" == "" ]; then
+    ENV_NAME="local"
+fi
+
+if ! [[ "$ENV_NAME" =~ ^[a-zA-Z0-9]+$ ]]; then
+    echo "the environment name $ENV_NAME is not valid"
+    exit 0
+fi
+
+if [ -f "./$DCP_NAME.yml" ]; then
+    ARGUMENTS="--file=$DCP_NAME.yml"
+else
+    ARGUMENTS=""
+fi
+
+if [ "$ENV_NAME" != "" ]; then
+    ENV_FILE=".env.$ENV_NAME"
+    DCP_NAME="docker-compose.$ENV_NAME"
+fi
+
+if [ "$ENV_NAME" == "testing" ] && [ ! -f "./$ENV_FILE" ] && [ -f "./.env.test" ]; then
+    ENV_NAME="test"
+    ENV_FILE=".env.$ENV_NAME"
+    DCP_NAME="docker-compose.$ENV_NAME"
+fi
+
+if [ "$ENV_NAME" == "development" ] && [ ! -f "./$ENV_FILE" ] && [ -f "./.env.dev" ]; then
+    ENV_NAME="dev"
+    ENV_FILE=".env.$ENV_NAME"
+    DCP_NAME="docker-compose.$ENV_NAME"
+fi
+
+if [ "$ENV_NAME" == "production" ] && [ ! -f "./$ENV_FILE" ] && [ -f "./.env.prod" ]; then
+    ENV_NAME="prod"
+    ENV_FILE=".env.$ENV_NAME"
+    DCP_NAME="docker-compose.$ENV_NAME"
+fi
+
+if [ "$ENV_NAME" == "prod" ] || [ "$ENV_NAME" == "production" ]; then
+    if [ ! -f "./$ENV_FILE" ]; then
+        ENV_NAME="local"
+        ENV_FILE=".env.$ENV_NAME"
+        DCP_NAME="docker-compose.$ENV_NAME"
+    fi
+fi
+
+if [ "$ENV_NAME" != "local" ] && [ ! -f "./$ENV_FILE" ]; then
+    echo "the environment file $ENV_FILE does not exist"
+    exit 0
+fi
+
+if [ "$ENV_NAME" != "local" ] && [ ! -f "./$ENV_FILE" ]; then
+    echo "the environment file $ENV_FILE does not exist"
+    exit 0
+fi
+
+if [ ! -f "./$ENV_FILE" ]; then
+    ENV_NAME="local"
+    ENV_FILE=".env"
+fi
+
+DCP_OVERRIDE="docker-compose.override"
+
+if [ "$ENV_NAME" != "local" ] && [ -f "./$DCP_OVERRIDE.yml" ]; then
+    ARGUMENTS="$ARGUMENTS --file=$DCP_OVERRIDE.yml"
+fi
+
+if [ -f "./$DCP_NAME.yml" ]; then
+    ARGUMENTS="--file=$DCP_NAME.yml $ARGUMENTS"
+fi
+
+# get name from this current directory
+DIR_NAME=$(basename $(pwd))
+PROJECT_NAME=$(echo $DIR_NAME | sed 's/[^a-zA-Z0-9]/-/g')
+PROJECT_NAME="${PROJECT_NAME}__${ENV_NAME}"
+ARGUMENTS="$ARGUMENTS --project-name=$PROJECT_NAME --env-file=$ENV_FILE"
+
+IMAGE_NAME=$(cat Dockerfile | grep "FROM" | awk '{print $2}')
+
+if ! [ -x "$(command -v docker-compose)" ]; then
+    PROGRAM="docker compose"
+else
+    PROGRAM="docker-compose"
+fi
+
+if [ $COMMAND == "bash" ] || [ $COMMAND == "sh" ]; then
+    $PROGRAM $(echo $ARGUMENTS) exec -- app $(echo $COMMAND) $(echo $OPTIONS)
+    exit 0
+fi
+
+if [ $COMMAND == "test" ]; then
+    $PROGRAM $(echo $ARGUMENTS) exec -- app php artisan test $(echo $OPTIONS)
+    exit 0
+fi
+
+if [ $COMMAND == "tinker" ]; then
+    $PROGRAM $(echo $ARGUMENTS) exec -- app php artisan tinker $(echo $OPTIONS)
+    exit 0
+fi
+
+if [ $COMMAND == "a" ] || [ $COMMAND == "artisan" ]; then
+    if [ "$ENV_NAME" == "prod" ] || [ "$ENV_NAME" == "main" ]; then
+        echo ""
+        echo "📣 WARNING YOU ARE IN {{ PRODUCTION }} MODE"
+        echo ""
+        echo "❗ php artisan $OPTIONS"
+        echo ""
+        echo "📣 -----------------------------"
+        echo ""
+        read -p "Are you sure you want to run this command in production? write: [i agree with this action] " RESPOSE
+        if [ "$RESPOSE" != "i agree with this action" ]; then
+            echo "action canceled"
+            exit 0
+        fi
+
+    fi
+    docker run --rm -it -v $(pwd):/var/www $(echo $IMAGE_NAME) php artisan --env=$ENV_NAME $(echo $OPTIONS)
+    exit 0
+fi
+
+if [ $COMMAND == "c" ] || [ $COMMAND == "composer" ]; then
+    $PROGRAM $(echo $ARGUMENTS) exec -- app composer $(echo $OPTIONS)
+    exit 0
+fi
+
+if [ $COMMAND == "s" ] || [ $COMMAND == "supervisor" ]; then
+    if [ "$OPTIONS" == "" ]; then
+        $OPTIONS="status"
+    fi
+
+    $PROGRAM $(echo $ARGUMENTS) exec -- app supervisorctl --configuration=/supervisord.conf $(echo $OPTIONS)
+    exit 0
+fi
+
+if [ $COMMAND == "cmd" ]; then
+    $PROGRAM $(echo $ARGUMENTS) exec -- app $(echo $OPTIONS)
+    exit 0
+fi
+
+if [ $COMMAND == "x" ]; then
+    docker run --rm -it -v $(pwd):/var/www $(echo $IMAGE_NAME) $(echo $OPTIONS)
+    exit 0
+fi
+
+if [ $COMMAND == "l" ] || [ $COMMAND == "logging" ]; then
+    $PROGRAM $(echo $ARGUMENTS) exec -- app tail -n 50 -F storage/logs/laravel.log
+    exit 0
+fi
+
+if [ $COMMAND == "reload" ]; then
+    $PROGRAM $(echo $ARGUMENTS) restart -- app
+    exit 0
+fi
+
+$PROGRAM $(echo $ARGUMENTS) $(echo $COMMAND) $(echo $OPTIONS)
