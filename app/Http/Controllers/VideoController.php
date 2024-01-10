@@ -107,7 +107,7 @@ class VideoController extends Controller
         // $video->embed_token = null;
         // $video->save();
 
-        $videoPath = storage_path('app/' . $video->path);
+        $videoPath = storage_path('app/public/' . $video->path);
 
         if (!file_exists($videoPath)) {
             abort(404, "El video no se encontró.");
