@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Subir Video</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 
 <body class="bg-gray-100">
@@ -13,7 +14,7 @@
         <h1 class="text-3xl font-bold text-gray-800 mb-6">Subir Video</h1>
         <a href="{{ route('videos.index') }}" target="_blank"
             class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg mb-4">
-            Ver Lista de Videos
+            <i class="fas fa-list-ul pr-1"></i> Lista de Videos
         </a>
 
         <div id="success-message" class="hidden bg-green-500 p-4 rounded-lg mb-6 text-white"></div>
@@ -40,10 +41,10 @@
                 </div>
                 <div class="mb-4">
                     <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-lg w-full"
-                        id="submit-button">Subir Video</button>
+                        id="submit-button"><i class="fa fa-upload pr-1"></i>Subir Video</button>
                     <button type="button"
                         class="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-lg w-full mt-2 hidden"
-                        id="cancel-button">Cancelar Subida</button>
+                        id="cancel-button"><i class="fa fa-ban pr-1"></i>Cancelar Subida</button>
                 </div>
 
             </form>
