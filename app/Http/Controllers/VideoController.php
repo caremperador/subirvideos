@@ -86,13 +86,13 @@ class VideoController extends Controller
     {
         // Verifica el referente de la solicitud
         $referer = request()->headers->get('referer');
-        $allowedReferer = 'http://yaske.test'; // URL de tu sitio permitido
+        $allowedReferer = 'http://localhost'; // URL de tu sitio permitido
 
         // // Verificar si el referente contiene la URL permitida
-        if (strpos($referer, $allowedReferer) === false) {
-            // Si el referente no es el permitido, muestra una página de error o niega el acceso
-            return view('error.no-permission');
-        }
+        // if (strpos($referer, $allowedReferer) === false) {
+        //     // Si el referente no es el permitido, muestra una página de error o niega el acceso
+        //     return view('error.no-permission');
+        // }
 
         // Si el referente es válido, muestra la vista de embed
         return view('videos.embed', compact('video'));
