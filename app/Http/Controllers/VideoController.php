@@ -37,7 +37,7 @@ class VideoController extends Controller
         // Obtiene el archivo de video de la solicitud
         $videoFile = $request->file('video');
         // Almacena el archivo en el disco 'public' en la carpeta 'videos'
-        $path = $videoFile->store('videos', 'public');
+        $path = $videoFile->store('videos', 'volume_ams3_01');
 
         // Crea un nuevo registro de video con los datos proporcionados
         $video = Video::create([

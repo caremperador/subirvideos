@@ -44,6 +44,14 @@ return [
             'throw' => false,
         ],
 
+        'volume_ams3_01' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/volume_ams3_01'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
