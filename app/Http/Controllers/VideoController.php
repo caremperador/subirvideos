@@ -11,47 +11,6 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 // Clase VideoController que extiende de Controller
 class VideoController extends Controller
 {
-    // Muestra el formulario para subir videos
-    public function create()
-    {
-        // Retorna una vista llamada 'videos.create'
-        return view('videos.create');
-    }
-
-    // Guarda el video subido
-    public function store(Request $request)
-    {
-        // Valida la solicitud asegurando que se haya subido un archivo de tipo 'mp4'
-        // y validando los campos 'nombre' e 'idioma'
-        try {
-            $request->validate([
-                'nombre' => 'required|string|max:255',
-                'idioma' => 'required|in:es_es,es_lat,in,in_sub',
-                'video' => 'required|file|mimes:mp4'
-            ]);
-        } catch (\Throwable $th) {
-            //throw $th;
-            return response()->json(['error' => $th->getMessage()]);
-        }
-
-        $disk = 'volume_ams3_01';
-        // Obtiene el archivo de video de la solicitud
-        $videoFile = $request->file('video');
-        // Almacena el archivo en el disco 'public' en la carpeta 'videos'
-        $path = $videoFile->store('videos', $disk);
-
-        // Crea un nuevo registro de video con los datos proporcionados
-        $video = Video::create([
-            'nombre' => $request->nombre, // Almacena el nombre del video
-            'idioma' => $request->idioma, // Almacena el idioma del video
-            'title' => $videoFile->getClientOriginalName(), // Almacena el título original del archivo
-            'path' => $path, // Almacena la ruta del archivo
-            'disk' => $disk,
-        ]);
-
-        return response()->json(['id' => $video->id]);
-    }
-
 
     public function index(Request $request)
     {
@@ -67,23 +26,63 @@ class VideoController extends Controller
 
         return view('videos.index', compact('videos'));
     }
+    // Muestra el formulario para subir videos
+    public function create()
+    {
+        // Retorna una vista llamada 'videos.create'
+        return view('videos.create');
+    }
+
+
+    // Guarda el video subido
+    public function store(Request $request)
+    {
+        // Validación
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'idioma' => 'required|in:es_es,es_lat,in,in_sub',
+            'video' => 'required|file|mimes:mp4'
+        ]);
+
+        // Selecciona un disco automáticamente o según la lógica de negocio
+        $disk = $this->selectDisk();
+
+        // Procesa la subida del archivo
+        $videoFile = $request->file('video');
+        $path = $videoFile->store('videos', $disk);
+
+        // Guarda la información del video en la base de datos
+        $video = Video::create([
+            'nombre' => $request->nombre,
+            'idioma' => $request->idioma,
+            'title' => $videoFile->getClientOriginalName(),
+            'path' => $path,
+            'disk' => $disk,
+        ]);
+
+        return response()->json(['id' => $video->id]);
+    }
+
+    private function selectDisk()
+    {
+        // Lógica para seleccionar un disco. Puede ser tan simple o compleja como necesites.
+        // Por ejemplo, devolver un disco fijo o basarse en algún criterio:
+        return 'volume_ams3_01'; // o cualquier otro disco
+    }
 
 
     // Método para eliminar un video
     public function destroy(Video $video)
     {
-        // Verifica si el archivo existe en el disco 'public'
-        if (Storage::disk('public')->exists($video->path)) {
-            // Elimina el archivo del disco 'public'
-            Storage::disk('public')->delete($video->path);
+        if (Storage::disk($video->disk)->exists($video->path)) {
+            Storage::disk($video->disk)->delete($video->path);
         }
 
-        // Elimina el registro del video de la base de datos
         $video->delete();
-
-        // Redirige a la ruta 'videos.index' con un mensaje de éxito
         return redirect()->route('videos.index')->with('success', 'Video eliminado con éxito.');
     }
+
+
     public function embed(Video $video)
     {
         // Verifica el referente de la solicitud
@@ -110,7 +109,7 @@ class VideoController extends Controller
         // Opcionalmente, puedes limpiar el token aquí si solo debe ser usado una vez
         // $video->embed_token = null;
         // $video->save();
-        
+
         /** @var mixed */
         $storage = Storage::disk($video->disk);
         $videoPath = $storage->path($video->path);
@@ -129,7 +128,7 @@ class VideoController extends Controller
         if ($range !== null) {
             list(, $range) = explode('=', $range, 2);
             list($start, $end) = explode('-', $range, 2);
-            
+
             if ($end === '') {
                 $end = min($start + $maxChunkSize - 1, $size - 1);
             }
@@ -151,7 +150,7 @@ class VideoController extends Controller
             ];
         }
 
-        return new StreamedResponse(function() use ($stream, $start, $end) {
+        return new StreamedResponse(function () use ($stream, $start, $end) {
             fseek($stream, $start);
             while (!feof($stream) && ftell($stream) <= $end) {
                 echo fread($stream, 2048);
