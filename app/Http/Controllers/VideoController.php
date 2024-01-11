@@ -6,6 +6,7 @@ use App\Models\Video; // Importa el modelo Video
 use Illuminate\Http\Request; // Importa la clase Request para manejar solicitudes HTTP
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage; // Importa la fachada Storage para operaciones de archivos
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 // Clase VideoController que extiende de Controller
 class VideoController extends Controller
@@ -114,16 +115,19 @@ class VideoController extends Controller
             abort(404, "El video no se encontró.");
         }
 
-        return Response::stream(function () use ($videoPath) {
-            $stream = fopen($videoPath, 'r');
+        $stream = fopen($videoPath, 'r');
+        return new StreamedResponse(function() use ($stream) {
+            while (ob_get_level()) { ob_end_clean(); }
             while (!feof($stream)) {
-                echo fread($stream, 1024);
-                flush();
+                echo fread($stream, 1024 * 1024);
                 ob_flush();
+                flush();
             }
+
             fclose($stream);
         }, 200, [
             'Content-Type' => 'video/mp4',
+            'Content-Length' => filesize($videoPath),
             'Content-Disposition' => 'inline; filename="' . basename($videoPath) . '"',
         ]);
     }
