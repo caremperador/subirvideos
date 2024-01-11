@@ -35,7 +35,7 @@ services:
         expose:
             - ${DB_PORT:-3306}
         volumes:
-            - data-mysql:/var/lib/mysql
+            - /var/data-mysql:/var/lib/mysql
         networks:
             - default
     redis:
@@ -127,6 +127,5 @@ networks:
         driver: bridge
 volumes:
     data-meilisearch:
-    data-mysql:
     data-redis:
     data-minio:

@@ -108,8 +108,10 @@ class VideoController extends Controller
         // Opcionalmente, puedes limpiar el token aquí si solo debe ser usado una vez
         // $video->embed_token = null;
         // $video->save();
-
-        $videoPath = storage_path('app/public/volume_ams3_01/' . $video->path);
+        
+        /** @var mixed */
+        $storage = Storage::disk($video->disk);
+        $videoPath = $storage->path($video->path);
 
         if (!file_exists($videoPath)) {
             abort(404, "El video no se encontró.");
