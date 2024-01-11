@@ -95,10 +95,13 @@
             uploadForm.addEventListener('submit', function(e) {
                 e.preventDefault();
 
+                // Captura los valores de nombre e idioma del formulario
+                const nombre = document.getElementById('nombre').value;
+                const idiomaSelect = document.getElementById('idioma');
+                const idioma = idiomaSelect.options[idiomaSelect.selectedIndex].text;
+
                 const formData = new FormData(this);
                 const xhr = new XMLHttpRequest();
-                const videoFile = document.getElementById('video').files[0];
-                const videoName = videoFile ? videoFile.name : '';
 
                 xhr.open('POST', this.action, true);
                 xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
@@ -107,9 +110,9 @@
                 const videoContainer = document.createElement('div');
                 videoContainer.className = 'bg-white p-4 rounded-lg shadow-md mb-4';
 
-                const videoTitle = document.createElement('p');
-                videoTitle.textContent = 'Subiendo: ' + videoName;
-                videoContainer.appendChild(videoTitle);
+                const videoInfo = document.createElement('p');
+                videoInfo.textContent = `Nombre: ${nombre} - Idioma: ${idioma}`;
+                videoContainer.appendChild(videoInfo);
 
                 const progressBar = document.createElement('div');
                 progressBar.className = 'bg-blue-500 text-xs leading-none py-1 text-center text-white';
@@ -117,9 +120,9 @@
                 videoContainer.appendChild(progressBar);
 
                 const cancelButton = document.createElement('button');
+                cancelButton.textContent = 'Cancelar';
                 cancelButton.className =
                     'bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg mt-2';
-                cancelButton.textContent = 'Cancelar';
                 videoContainer.appendChild(cancelButton);
 
                 videosSubidosContainer.appendChild(videoContainer);
@@ -128,26 +131,24 @@
                     if (e.lengthComputable) {
                         const percentage = (e.loaded / e.total) * 100;
                         progressBar.style.width = percentage + '%';
-                        progressBar.textContent = percentage.toFixed(0) + '%';
+                        progressBar.textContent = `${percentage.toFixed(0)}%`;
                     }
                 };
 
-                // Dentro del bloque de código donde se maneja la respuesta de la carga
                 xhr.onload = function() {
                     if (xhr.status === 200) {
                         const response = JSON.parse(xhr.responseText);
-                        videoTitle.textContent = videoName + ' - subido con éxito.';
+                        videoInfo.textContent += ' - Subido con éxito.';
                         progressBar.remove(); // Elimina la barra de progreso
                         cancelButton.remove(); // Elimina el botón de cancelar
 
-                        // Agrega un margen entre el título y el botón
+                        // Agrega un margen entre la información y el botón
                         const embedButton = document.createElement('a');
                         embedButton.href = "/videos/" + response.id + "/embed";
                         embedButton.target = "_blank";
                         embedButton.className =
-                            "bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg mr-2 mt-2 inline-block";
+                            "bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg mt-2 inline-block";
                         embedButton.textContent = "Ver Video Embed";
-
                         videoContainer.appendChild(embedButton);
                     } else {
                         console.error('Error en la carga');
