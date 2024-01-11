@@ -16,6 +16,9 @@ return new class extends Migration
             $table->string('title');
             $table->string('path');
             $table->string('disk');
+            $table->string('embed_token')->nullable();
+            $table->string('nombre');
+            $table->string('idioma');
             $table->timestamps();
         });
     }
