@@ -117,7 +117,6 @@ class VideoController extends Controller
 
         $stream = fopen($videoPath, 'r');
         return new StreamedResponse(function() use ($stream) {
-            while (ob_get_level()) { ob_end_clean(); }
             while (!feof($stream)) {
                 echo fread($stream, 1024 * 1024);
                 flush();
