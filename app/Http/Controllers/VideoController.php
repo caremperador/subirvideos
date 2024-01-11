@@ -117,8 +117,9 @@ class VideoController extends Controller
         return Response::stream(function () use ($videoPath) {
             $stream = fopen($videoPath, 'r');
             while (!feof($stream)) {
-                echo fread($stream, 1024 * 1024);
+                echo fread($stream, 1024);
                 flush();
+                ob_flush();
             }
             fclose($stream);
         }, 200, [
