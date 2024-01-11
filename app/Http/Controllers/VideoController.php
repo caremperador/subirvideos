@@ -120,8 +120,8 @@ class VideoController extends Controller
             while (ob_get_level()) { ob_end_clean(); }
             while (!feof($stream)) {
                 echo fread($stream, 1024 * 1024);
-                ob_flush();
                 flush();
+                ob_flush();
             }
 
             fclose($stream);
