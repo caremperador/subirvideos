@@ -63,11 +63,12 @@
         </div>
     </div>
 
-    <!-- Después del formulario -->
 
-<div id="videos-subidos" class="mt-4">
-    <!-- Aquí se mostrarán los videos subidos -->
-</div>
+    <!-- Contenedor de videos subidos -->
+    <div id="videos-subidos" class="mt-4 space-y-4">
+        <!-- Aquí se agregarán los videos subidos dinámicamente -->
+    </div>
+
 
 
     {{-- lista de servidores --}}
@@ -83,84 +84,88 @@
         </div>
     </div>
 
-    
-  {{-- modificado --}}
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-    const uploadForm = document.getElementById('upload-form');
-    const submitButton = document.getElementById('submit-button');
-    const videosSubidosContainer = document.getElementById('videos-subidos');
 
-    uploadForm.addEventListener('submit', function(e) {
-        e.preventDefault();
+    {{-- modificado --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadForm = document.getElementById('upload-form');
+            const submitButton = document.getElementById('submit-button');
+            const videosSubidosContainer = document.getElementById('videos-subidos');
 
-        const formData = new FormData(this);
-        const xhr = new XMLHttpRequest();
-        const videoFile = document.getElementById('video').files[0];
-        const videoName = videoFile ? videoFile.name : '';
+            uploadForm.addEventListener('submit', function(e) {
+                e.preventDefault();
 
-        xhr.open('POST', this.action, true);
-        xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
+                const formData = new FormData(this);
+                const xhr = new XMLHttpRequest();
+                const videoFile = document.getElementById('video').files[0];
+                const videoName = videoFile ? videoFile.name : '';
 
-        // Crear elementos para mostrar la subida del video
-        const videoContainer = document.createElement('div');
-        videoContainer.className = 'bg-white p-4 rounded-lg shadow-md mb-4';
+                xhr.open('POST', this.action, true);
+                xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
 
-        const videoTitle = document.createElement('p');
-        videoTitle.textContent = 'Subiendo: ' + videoName;
-        videoContainer.appendChild(videoTitle);
+                // Crear elementos para mostrar la subida del video
+                const videoContainer = document.createElement('div');
+                videoContainer.className = 'bg-white p-4 rounded-lg shadow-md mb-4';
 
-        const progressBar = document.createElement('div');
-        progressBar.className = 'bg-blue-500 text-xs leading-none py-1 text-center text-white';
-        progressBar.style.width = '0%';
-        videoContainer.appendChild(progressBar);
+                const videoTitle = document.createElement('p');
+                videoTitle.textContent = 'Subiendo: ' + videoName;
+                videoContainer.appendChild(videoTitle);
 
-        const cancelButton = document.createElement('button');
-        cancelButton.className = 'bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg mt-2';
-        cancelButton.textContent = 'Cancelar';
-        videoContainer.appendChild(cancelButton);
+                const progressBar = document.createElement('div');
+                progressBar.className = 'bg-blue-500 text-xs leading-none py-1 text-center text-white';
+                progressBar.style.width = '0%';
+                videoContainer.appendChild(progressBar);
 
-        videosSubidosContainer.appendChild(videoContainer);
+                const cancelButton = document.createElement('button');
+                cancelButton.className =
+                    'bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg mt-2';
+                cancelButton.textContent = 'Cancelar';
+                videoContainer.appendChild(cancelButton);
 
-        xhr.upload.onprogress = function(e) {
-            if (e.lengthComputable) {
-                const percentage = (e.loaded / e.total) * 100;
-                progressBar.style.width = percentage + '%';
-                progressBar.textContent = percentage.toFixed(0) + '%';
-            }
-        };
+                videosSubidosContainer.appendChild(videoContainer);
 
-        xhr.onload = function() {
-            if (xhr.status === 200) {
-                const response = JSON.parse(xhr.responseText);
-                videoTitle.textContent = videoName + ' subido con éxito.';
-                progressBar.remove();
-                cancelButton.remove();
+                xhr.upload.onprogress = function(e) {
+                    if (e.lengthComputable) {
+                        const percentage = (e.loaded / e.total) * 100;
+                        progressBar.style.width = percentage + '%';
+                        progressBar.textContent = percentage.toFixed(0) + '%';
+                    }
+                };
 
-                videoContainer.innerHTML += `
-                    <a href="/videos/${response.id}/embed" target="_blank" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg mr-2">
-                        Ver Video Embed
-                    </a>
-                `;
-            } else {
-                console.error('Error en la carga');
-            }
-        };
+                // Dentro del bloque de código donde se maneja la respuesta de la carga
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
+                        videoTitle.textContent = videoName + ' - subido con éxito.';
+                        progressBar.remove(); // Elimina la barra de progreso
+                        cancelButton.remove(); // Elimina el botón de cancelar
 
-        cancelButton.addEventListener('click', function() {
-            xhr.abort(); // Aborta la solicitud AJAX
-            videoContainer.remove(); // Elimina el contenedor del video
+                        // Agrega un margen entre el título y el botón
+                        const embedButton = document.createElement('a');
+                        embedButton.href = "/videos/" + response.id + "/embed";
+                        embedButton.target = "_blank";
+                        embedButton.className =
+                            "bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg mr-2 mt-2 inline-block";
+                        embedButton.textContent = "Ver Video Embed";
+
+                        videoContainer.appendChild(embedButton);
+                    } else {
+                        console.error('Error en la carga');
+                    }
+                };
+
+                cancelButton.addEventListener('click', function() {
+                    xhr.abort(); // Aborta la solicitud AJAX
+                    videoContainer.remove(); // Elimina el contenedor del video
+                });
+
+                xhr.send(formData);
+
+                // Resetear campos del formulario para nueva subida
+                uploadForm.reset();
+            });
         });
-
-        xhr.send(formData);
-
-        // Resetear campos del formulario para nueva subida
-        uploadForm.reset();
-    });
-});
-
-
-</script>
+    </script>
 
 
 
