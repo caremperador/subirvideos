@@ -114,18 +114,42 @@ class VideoController extends Controller
         if (!file_exists($videoPath)) {
             abort(404, "El video no se encontró.");
         }
-
+        $size = filesize($videoPath);
         $stream = fopen($videoPath, 'r');
-        return new StreamedResponse(function() use ($stream) {
-            while (!feof($stream)) {
-                echo fread($stream, 1024 * 1024);
+
+        // Encabezado Range de la solicitud
+        $range = $request->header('Range', null);
+        if ($range !== null) {
+            list(, $range) = explode('=', $range, 2);
+            list($start, $end) = explode('-', $range, 2);
+            if ($end === '') {
+                $end = $size - 1;
+            }
+            $length = $end - $start + 1;
+            
+            fseek($stream, $start);
+            $statusCode = 206; // Parcial content
+            $headers = [
+                'Content-Range' => sprintf('bytes %s-%s/%s', $start, $end, $size),
+                'Accept-Ranges' => 'bytes',
+                'Content-Length' => $length,
+            ];
+        } else {
+            $statusCode = 200;
+            $headers = [
+                'Content-Length' => $size,
+            ];
+        }
+
+        return new StreamedResponse(function() use ($stream, $start, $end) {
+            fseek($stream, $start);
+            while (!feof($stream) && ftell($stream) <= $end) {
+                echo fread($stream, 2048);
                 flush();
             }
-
             fclose($stream);
-        }, 200, [
+        }, $statusCode, $headers + [
             'Content-Type' => 'video/mp4',
-            'Content-Length' => filesize($videoPath),
             'Content-Disposition' => 'inline; filename="' . basename($videoPath) . '"',
         ]);
     }
