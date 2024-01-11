@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Video; // Importa el modelo Video
 use Illuminate\Http\Request; // Importa la clase Request para manejar solicitudes HTTP
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage; // Importa la fachada Storage para operaciones de archivos
 
 // Clase VideoController que extiende de Controller
@@ -113,7 +114,16 @@ class VideoController extends Controller
             abort(404, "El video no se encontró.");
         }
 
-        // Servir el video directamente desde la ruta
-        return redirect('/storage/' . $video->path);
+        return Response::stream(function () use ($videoPath) {
+            $stream = fopen($videoPath, 'r');
+            while (!feof($stream)) {
+                echo fread($stream, 1024 * 1024);
+                flush();
+            }
+            fclose($stream);
+        }, 200, [
+            'Content-Type' => 'video/mp4',
+            'Content-Disposition' => 'inline; filename="' . basename($videoPath) . '"',
+        ]);
     }
 }
