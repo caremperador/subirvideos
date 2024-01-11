@@ -1,7 +1,7 @@
 version: '3.1'
 services:
     app:
-        restart: on-failure
+        restart: always
         image: laravel/app
         build:
             context: .
@@ -24,7 +24,7 @@ services:
             - mailpit
             - meilisearch
     mysql:
-        restart: on-failure
+        restart: always
         image: mysql:8
         environment:
             MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-secret}
@@ -39,7 +39,7 @@ services:
         networks:
             - default
     redis:
-        restart: on-failure
+        restart: always
         image: redis
         volumes:
             - data-redis:/data
@@ -48,7 +48,7 @@ services:
         networks:
             - default
     minio:
-        restart: on-failure
+        restart: always
         image: minio/minio
         expose:
             - 9000
@@ -67,14 +67,14 @@ services:
             retries: 3
             timeout: 5s
     mailpit:
-        restart: on-failure
+        restart: always
         image: axllent/mailpit
         expose:
             - 1025
         ports:
             - "${MAILPIT_DASHBOARD_PORT:-8025}:8025"
     meilisearch:
-        restart: on-failure
+        restart: always
         image: getmeili/meilisearch
         expose:
             - 7700
@@ -89,14 +89,14 @@ services:
             retries: 3
             timeout: 5s
     memcached:
-        restart: on-failure
+        restart: always
         image: memcached:alpine
         expose:
             - 11211
         networks:
             - default
     soketi:
-        restart: on-failure
+        restart: always
         image: quay.io/soketi/soketi:latest-16-alpine
         environment:
             SOKETI_DEBUG: 1
@@ -109,7 +109,7 @@ services:
         networks:
             - default
     phpmyadmin:
-        restart: on-failure
+        restart: always
         image: phpmyadmin/phpmyadmin
         environment:
             PMA_HOST: ${DB_HOST:-mysql}
