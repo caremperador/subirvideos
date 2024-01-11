@@ -63,7 +63,7 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const uploadForm = document.getElementById('upload-form');
             const submitButton = document.getElementById('submit-button');
             const cancelButton = document.getElementById('cancel-button');
@@ -73,14 +73,15 @@
             const videoButtons = document.getElementById('video-buttons');
             const viewVideoBtn = document.getElementById('view-video-btn');
     
+            let xhr = new XMLHttpRequest(); // Se define xhr aquí para acceder en el otro manejador de eventos
+    
             uploadForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                
+    
                 submitButton.disabled = true; // Deshabilita el botón de envío
                 cancelButton.classList.remove('hidden'); // Muestra el botón de cancelar
     
                 const formData = new FormData(this);
-                const xhr = new XMLHttpRequest();
                 xhr.open('POST', this.action, true);
                 xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
     
@@ -115,13 +116,15 @@
             });
     
             cancelButton.addEventListener('click', function() {
-                xhr.abort(); // Cancela la solicitud
-                submitButton.disabled = false;
-                cancelButton.classList.add('hidden');
+                xhr.abort(); // Aborta la solicitud AJAX
                 progressBarContainer.classList.add('hidden');
+                submitButton.disabled = false; // Re-habilita el botón de envío
+                cancelButton.classList.add('hidden'); // Oculta el botón de cancelar
+                progressBar.style.width = '0%'; // Resetea la barra de progreso
             });
         });
     </script>
+    
     
 </body>
 
