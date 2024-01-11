@@ -62,6 +62,13 @@
         </div>
     </div>
 
+    {{-- Dentro de videos.create.blade.php --}}
+    <div class="pt-4">
+        @foreach ($sumasPorDiscoGB as $disco => $tamaño)
+            <p>{{ $disco }}: {{ $tamaño }}</p>
+        @endforeach
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const uploadForm = document.getElementById('upload-form');
@@ -72,19 +79,19 @@
             const successMessage = document.getElementById('success-message');
             const videoButtons = document.getElementById('video-buttons');
             const viewVideoBtn = document.getElementById('view-video-btn');
-    
+
             let xhr = new XMLHttpRequest(); // Se define xhr aquí para acceder en el otro manejador de eventos
-    
+
             uploadForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-    
+
                 submitButton.disabled = true; // Deshabilita el botón de envío
                 cancelButton.classList.remove('hidden'); // Muestra el botón de cancelar
-    
+
                 const formData = new FormData(this);
                 xhr.open('POST', this.action, true);
                 xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
-    
+
                 xhr.upload.onprogress = function(e) {
                     if (e.lengthComputable) {
                         const percentage = (e.loaded / e.total) * 100;
@@ -92,15 +99,16 @@
                         progressBar.textContent = percentage.toFixed(0) + '%';
                     }
                 };
-    
+
                 xhr.onloadstart = function(e) {
                     progressBarContainer.classList.remove('hidden');
                 };
-    
+
                 xhr.onload = function() {
                     if (xhr.status === 200) {
                         const response = JSON.parse(xhr.responseText);
-                        successMessage.textContent = 'Video subido con éxito. ID del Video: ' + response.id;
+                        successMessage.textContent = 'Video subido con éxito. ID del Video: ' + response
+                            .id;
                         successMessage.classList.remove('hidden');
                         progressBarContainer.classList.add('hidden');
                         videoButtons.classList.remove('hidden');
@@ -111,10 +119,10 @@
                     submitButton.disabled = false;
                     cancelButton.classList.add('hidden');
                 };
-    
+
                 xhr.send(formData);
             });
-    
+
             cancelButton.addEventListener('click', function() {
                 xhr.abort(); // Aborta la solicitud AJAX
                 progressBarContainer.classList.add('hidden');
@@ -124,8 +132,8 @@
             });
         });
     </script>
-    
-    
+
+
 </body>
 
 </html>

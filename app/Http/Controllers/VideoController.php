@@ -28,10 +28,20 @@ class VideoController extends Controller
     }
     // Muestra el formulario para subir videos
     public function create()
-    {
-        // Retorna una vista llamada 'videos.create'
-        return view('videos.create');
-    }
+{
+    // Obtener la suma del tamaño de los archivos por disco
+    $sumasPorDisco = Video::groupBy('disk')
+                           ->selectRaw('disk, sum(size) as totalSize')
+                           ->pluck('totalSize', 'disk');
+
+    // Convertir a GB
+    $sumasPorDiscoGB = $sumasPorDisco->map(function ($size) {
+        return number_format($size / 1024 / 1024 / 1024, 2) . ' GB';
+    });
+
+    return view('videos.create', ['sumasPorDiscoGB' => $sumasPorDiscoGB]);
+}
+
 
 
     // Guarda el video subido
@@ -50,6 +60,7 @@ class VideoController extends Controller
         // Procesa la subida del archivo
         $videoFile = $request->file('video');
         $path = $videoFile->store('videos', $disk);
+        $size = $videoFile->getSize();
 
         // Guarda la información del video en la base de datos
         $video = Video::create([
@@ -58,6 +69,7 @@ class VideoController extends Controller
             'title' => $videoFile->getClientOriginalName(),
             'path' => $path,
             'disk' => $disk,
+            'size' => $size,
         ]);
 
         return response()->json(['id' => $video->id]);
