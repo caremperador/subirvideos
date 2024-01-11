@@ -34,17 +34,19 @@ class VideoController extends Controller
             return response()->json(['error' => $th->getMessage()]);
         }
 
+        $disk = 'volume_ams3_01';
         // Obtiene el archivo de video de la solicitud
         $videoFile = $request->file('video');
         // Almacena el archivo en el disco 'public' en la carpeta 'videos'
-        $path = $videoFile->store('videos', 'volume_ams3_01');
+        $path = $videoFile->store('videos', $disk);
 
         // Crea un nuevo registro de video con los datos proporcionados
         $video = Video::create([
             'nombre' => $request->nombre, // Almacena el nombre del video
             'idioma' => $request->idioma, // Almacena el idioma del video
             'title' => $videoFile->getClientOriginalName(), // Almacena el título original del archivo
-            'path' => $path // Almacena la ruta del archivo
+            'path' => $path, // Almacena la ruta del archivo
+            'disk' => $disk,
         ]);
 
         return response()->json(['id' => $video->id]);
