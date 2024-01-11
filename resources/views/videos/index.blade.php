@@ -56,6 +56,7 @@
                             </p>
                             <p class="text-gray-600">Título del Archivo: {{ $video->title }}</p>
                             <p class="text-gray-600">Subido el: {{ $video->created_at->format('d/m/Y H:i') }}</p>
+                            <p class="text-gray-600">Almacenado en: {{ $video->disk }}</p> <!-- Línea agregada -->
                         </div>
                         <div class="flex items-center">
                             <a href="{{ route('videos.embed', $video) }}" target="_blank"
