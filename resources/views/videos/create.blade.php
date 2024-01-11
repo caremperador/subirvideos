@@ -62,12 +62,19 @@
         </div>
     </div>
 
-    {{-- Dentro de videos.create.blade.php --}}
+    {{-- lista de servidores --}}
     <div class="pt-4">
-        @foreach ($sumasPorDiscoGB as $disco => $tamaño)
-            <p>{{ $disco }}: {{ $tamaño }}</p>
-        @endforeach
+        <div class="bg-white p-4 rounded-lg shadow-md">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Uso del Espacio en Discos</h2>
+            <ul class="list-disc pl-5 space-y-2">
+                @foreach ($sumasPorDiscoGB as $disco => $tamaño)
+                    <li class="text-gray-700">{{ $disco }}: <span
+                            class="font-semibold">{{ $tamaño }}</span></li>
+                @endforeach
+            </ul>
+        </div>
     </div>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
