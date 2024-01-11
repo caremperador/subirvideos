@@ -76,71 +76,69 @@
         </div>
     </div>
 
+  {{-- modificado --}}
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const uploadForm = document.getElementById('upload-form');
+        const submitButton = document.getElementById('submit-button');
+        const progressList = document.getElementById('progress-list');
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const uploadForm = document.getElementById('upload-form');
-            const submitButton = document.getElementById('submit-button');
-            const progressList = document.getElementById('progress-list');
-    
-            uploadForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-    
-                const formData = new FormData(this);
-                const xhr = new XMLHttpRequest();
-                const progressBarId = 'progress-' + Date.now(); // Identificador único para la barra de progreso
-                const viewVideoBtnId = 'view-video-' + Date.now(); // Identificador único para el botón de ver video
-    
-                // Agregar una nueva barra de progreso a la lista
-                const progressBarContainer = document.createElement('div');
-                progressBarContainer.innerHTML = `
-                    <div class="bg-gray-200 rounded-full mb-2">
-                        <div id="${progressBarId}" class="bg-blue-500 text-xs leading-none py-1 text-center text-white" style="width: 0%"></div>
-                    </div>
-                    <button type="button" class="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-lg mt-2 cancel-upload">Cancelar Subida</button>
-                    <a id="${viewVideoBtnId}" href="#" target="_blank" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg mr-2 hidden">Ver Video Embed</a>
-                `;
-                progressList.appendChild(progressBarContainer);
-    
-                const progressBar = document.getElementById(progressBarId);
-                const cancelButton = progressBarContainer.querySelector('.cancel-upload');
-                const viewVideoBtn = document.getElementById(viewVideoBtnId);
-    
-                xhr.open('POST', this.action, true);
-                xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
-    
-                xhr.upload.onprogress = function(e) {
-                    if (e.lengthComputable) {
-                        const percentage = (e.loaded / e.total) * 100;
-                        progressBar.style.width = percentage + '%';
-                        progressBar.textContent = percentage.toFixed(0) + '%';
-                    }
-                };
-    
-                xhr.onload = function() {
-                    if (xhr.status === 200) {
-                        const response = JSON.parse(xhr.responseText);
-                        viewVideoBtn.href = '/videos/' + response.id + '/embed'; // Asumiendo que la respuesta incluye el ID del video
-                        viewVideoBtn.classList.remove('hidden');
-                    } else {
-                        console.error('Error en la carga');
-                    }
-                    cancelButton.classList.add('hidden'); // Oculta el botón de cancelar
-                    uploadForm.reset(); // Reiniciar el formulario para una nueva subida
-                    submitButton.disabled = false; // Re-habilita el botón de envío
-                };
-    
-                cancelButton.addEventListener('click', function() {
-                    xhr.abort(); // Aborta la solicitud AJAX
-                    progressBarContainer.remove(); // Elimina la barra de progreso y el botón de cancelar
-                });
-    
-                xhr.send(formData);
-                submitButton.disabled = true; // Deshabilita el botón de envío mientras se sube el archivo
+        uploadForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const xhr = new XMLHttpRequest();
+            const progressBarId = 'progress-' + Date.now();
+            const viewVideoBtnId = 'view-video-' + Date.now();
+
+            const progressBarContainer = document.createElement('div');
+            progressBarContainer.innerHTML = `
+                <div class="bg-gray-200 rounded-full mb-2">
+                    <div id="${progressBarId}" class="bg-blue-500 text-xs leading-none py-1 text-center text-white" style="width: 0%"></div>
+                </div>
+                <button type="button" class="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-lg mt-2 cancel-upload">Cancelar</button>
+                <a id="${viewVideoBtnId}" href="#" target="_blank" class="hidden">Ver Video</a>
+            `;
+            progressList.appendChild(progressBarContainer);
+
+            const progressBar = document.getElementById(progressBarId);
+            const cancelButton = progressBarContainer.querySelector('.cancel-upload');
+            const viewVideoBtn = document.getElementById(viewVideoBtnId);
+
+            xhr.open('POST', uploadForm.action, true);
+            xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
+
+            xhr.upload.onprogress = function(e) {
+                if (e.lengthComputable) {
+                    const percentage = (e.loaded / e.total) * 100;
+                    progressBar.style.width = percentage + '%';
+                    progressBar.textContent = percentage.toFixed(0) + '%';
+                }
+            };
+
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    const response = JSON.parse(xhr.responseText);
+                    viewVideoBtn.href = '/videos/' + response.id + '/embed';
+                    viewVideoBtn.classList.remove('hidden');
+                } else {
+                    console.error('Error en la carga');
+                }
+                cancelButton.classList.add('hidden');
+                uploadForm.reset();
+                submitButton.disabled = false;
+            };
+
+            cancelButton.addEventListener('click', function() {
+                xhr.abort();
+                progressBarContainer.remove();
             });
+
+            xhr.send(formData);
+            submitButton.disabled = true;
         });
-    </script>
-    
+    });
+</script>
 
 
 </body>
