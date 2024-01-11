@@ -63,6 +63,13 @@
         </div>
     </div>
 
+    <!-- Después del formulario -->
+
+    <div id="videos-subidos" class="mt-4">
+        <!-- Aquí se mostrarán los videos subidos -->
+    </div>
+
+
     {{-- lista de servidores --}}
     <div class="pt-4">
         <div class="bg-white p-4 rounded-lg shadow-md">
@@ -76,70 +83,73 @@
         </div>
     </div>
 
-  {{-- modificado --}}
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const uploadForm = document.getElementById('upload-form');
-        const submitButton = document.getElementById('submit-button');
-        const cancelButton = document.getElementById('cancel-button');
-        const progressBarContainer = document.getElementById('progress-container');
-        const progressBar = document.getElementById('progress-bar');
-        const successMessage = document.getElementById('success-message');
-        const videoButtons = document.getElementById('video-buttons');
-        const viewVideoBtn = document.getElementById('view-video-btn');
 
-        let xhr = new XMLHttpRequest(); // Se define xhr aquí para acceder en el otro manejador de eventos
+    {{-- modificado --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadForm = document.getElementById('upload-form');
+            const submitButton = document.getElementById('submit-button');
+            const videosSubidosContainer = document.getElementById('videos-subidos');
 
-        uploadForm.addEventListener('submit', function(e) {
-            e.preventDefault();
+            uploadForm.addEventListener('submit', function(e) {
+                e.preventDefault();
 
-            submitButton.disabled = true; // Deshabilita el botón de envío
-            cancelButton.classList.remove('hidden'); // Muestra el botón de cancelar
+                const formData = new FormData(this);
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', this.action, true);
+                xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
 
-            const formData = new FormData(this);
-            xhr.open('POST', this.action, true);
-            xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
+                // Crear elementos para mostrar la subida del video
+                const videoContainer = document.createElement('div');
+                videoContainer.className = 'bg-white p-4 rounded-lg shadow-md mb-4';
 
-            xhr.upload.onprogress = function(e) {
-                if (e.lengthComputable) {
-                    const percentage = (e.loaded / e.total) * 100;
-                    progressBar.style.width = percentage + '%';
-                    progressBar.textContent = percentage.toFixed(0) + '%';
+                const progressBar = document.createElement('div');
+                progressBar.className = 'bg-blue-500 text-xs leading-none py-1 text-center text-white';
+                progressBar.style.width = '0%';
+
+                videoContainer.appendChild(progressBar);
+                videosSubidosContainer.appendChild(videoContainer);
+
+                xhr.upload.onprogress = function(e) {
+                    if (e.lengthComputable) {
+                        const percentage = (e.loaded / e.total) * 100;
+                        progressBar.style.width = percentage + '%';
+                        progressBar.textContent = percentage.toFixed(0) + '%';
+                    }
+                };
+
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
+
+                        // Agregar botón para ver embed y eliminar
+                        videoContainer.innerHTML += `
+                    <a href="/videos/${response.id}/embed" target="_blank" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg mr-2">
+                        Ver Video Embed
+                    </a>
+                    <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg mr-2 cancel-button">
+                        Cancelar
+                    </button>
+                `;
+                    } else {
+                        console.error('Error en la carga');
+                    }
+                };
+
+                xhr.send(formData);
+
+                // Resetear formulario para nueva subida
+                uploadForm.reset();
+            });
+
+            // Manejar cancelación de subida
+            document.addEventListener('click', function(e) {
+                if (e.target && e.target.classList.contains('cancel-button')) {
+                    // Lógica para cancelar la subida específica
                 }
-            };
-
-            xhr.onloadstart = function(e) {
-                progressBarContainer.classList.remove('hidden');
-            };
-
-            xhr.onload = function() {
-                if (xhr.status === 200) {
-                    const response = JSON.parse(xhr.responseText);
-                    successMessage.textContent = 'Video subido con éxito. ID del Video: ' + response
-                        .id;
-                    successMessage.classList.remove('hidden');
-                    progressBarContainer.classList.add('hidden');
-                    videoButtons.classList.remove('hidden');
-                    viewVideoBtn.href = '/videos/' + response.id + '/embed';
-                } else {
-                    console.error('Error en la carga');
-                }
-                submitButton.disabled = false;
-                cancelButton.classList.add('hidden');
-            };
-
-            xhr.send(formData);
+            });
         });
-
-        cancelButton.addEventListener('click', function() {
-            xhr.abort(); // Aborta la solicitud AJAX
-            progressBarContainer.classList.add('hidden');
-            submitButton.disabled = false; // Re-habilita el botón de envío
-            cancelButton.classList.add('hidden'); // Oculta el botón de cancelar
-            progressBar.style.width = '0%'; // Resetea la barra de progreso
-        });
-    });
-</script>
+    </script>
 
 
 
