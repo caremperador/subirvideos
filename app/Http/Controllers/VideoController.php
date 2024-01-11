@@ -117,16 +117,20 @@ class VideoController extends Controller
         $size = filesize($videoPath);
         $stream = fopen($videoPath, 'r');
 
+        // Tamaño máximo de segmento
+        $maxChunkSize = 1024 * 1024; // 1MB
+
         // Encabezado Range de la solicitud
         $range = $request->header('Range', null);
         if ($range !== null) {
             list(, $range) = explode('=', $range, 2);
             list($start, $end) = explode('-', $range, 2);
-            if ($end === '') {
-                $end = $size - 1;
-            }
-            $length = $end - $start + 1;
             
+            if ($end === '') {
+                $end = min($start + $maxChunkSize - 1, $size - 1);
+            }
+
+            $length = $end - $start + 1;
             fseek($stream, $start);
             $statusCode = 206; // Parcial content
             $headers = [
@@ -135,6 +139,8 @@ class VideoController extends Controller
                 'Content-Length' => $length,
             ];
         } else {
+            $start = 0;
+            $end = $maxChunkSize - 1;
             $statusCode = 200;
             $headers = [
                 'Content-Length' => $size,
