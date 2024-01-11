@@ -89,10 +89,10 @@ class VideoController extends Controller
         $allowedReferer = 'http://165.22.206.23'; // URL de tu sitio permitido
 
         // // Verificar si el referente contiene la URL permitida
-        // if (strpos($referer, $allowedReferer) === false) {
-        //     // Si el referente no es el permitido, muestra una página de error o niega el acceso
-        //     return view('error.no-permission');
-        // }
+        if (strpos($referer, $allowedReferer) === false) {
+            // Si el referente no es el permitido, muestra una página de error o niega el acceso
+            return view('error.no-permission');
+        }
 
         // Si el referente es válido, muestra la vista de embed
         return view('videos.embed', compact('video'));
