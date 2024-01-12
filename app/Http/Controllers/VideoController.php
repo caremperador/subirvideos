@@ -8,9 +8,11 @@ use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage; // Importa la fachada Storage para operaciones de archivos
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
+
 // Clase VideoController que extiende de Controller
 class VideoController extends Controller
 {
+
 
     public function index(Request $request)
     {
@@ -28,19 +30,20 @@ class VideoController extends Controller
     }
     // Muestra el formulario para subir videos
     public function create()
-{
-    // Obtener la suma del tamaño de los archivos por disco
-    $sumasPorDisco = Video::groupBy('disk')
-                           ->selectRaw('disk, sum(size) as totalSize')
-                           ->pluck('totalSize', 'disk');
+    {
 
-    // Convertir a GB
-    $sumasPorDiscoGB = $sumasPorDisco->map(function ($size) {
-        return number_format($size / 1024 / 1024 / 1024, 2) . ' GB';
-    });
+        // Obtener la suma del tamaño de los archivos por disco
+        $sumasPorDisco = Video::groupBy('disk')
+            ->selectRaw('disk, sum(size) as totalSize')
+            ->pluck('totalSize', 'disk');
 
-    return view('videos.create', ['sumasPorDiscoGB' => $sumasPorDiscoGB]);
-}
+        // Convertir a GB
+        $sumasPorDiscoGB = $sumasPorDisco->map(function ($size) {
+            return number_format($size / 1024 / 1024 / 1024, 2) . ' GB';
+        });
+
+        return view('videos.create', ['sumasPorDiscoGB' => $sumasPorDiscoGB]);
+    }
 
 
 
@@ -99,19 +102,31 @@ class VideoController extends Controller
     {
         // Verifica el referente de la solicitud
         $referer = request()->headers->get('referer');
-        $allowedReferer = 'http://localhost'; // URL de tu sitio permitido
+        $allowedReferers = ['http://localhost', 'https://yaske.ru', 'http://yaske.ru'];
 
-        // // Verificar si el referente contiene la URL permitida
-        // if (strpos($referer, $allowedReferer) === false) {
-        //     // Si el referente no es el permitido, muestra una página de error o niega el acceso
-        //     return view('error.no-permission');
-        // }
+        // Verificar si el referente está en la lista de URL permitidas
+        $isAllowedReferer = false;
+        foreach ($allowedReferers as $allowedReferer) {
+            if (strpos($referer, $allowedReferer) !== false) {
+                $isAllowedReferer = true;
+                break;
+            }
+        }
+
+        // Si el referente no es permitido, redirige a una URL externa con un código aleatorio
+        if (!$isAllowedReferer) {
+            $randomCode = mt_rand(100000000000, 999999999999); // Genera un número aleatorio de 12 dígitos
+            return redirect()->away("https://ok.ru/video/{$randomCode}");
+        }
 
         // Si el referente es válido, muestra la vista de embed
         return view('videos.embed', compact('video'));
     }
 
-    public function play(Request $request, Video $video, $token)
+
+
+
+    public function play(Request $request, Video $video)
     {
         // Verificar que el token proporcionado coincida con el token del video
         // if ($token !== $video->embed_token) {

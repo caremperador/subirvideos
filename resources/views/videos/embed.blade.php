@@ -29,24 +29,12 @@
     </style>
 </head>
 <body class="h-full">
-
-{{-- reproductor videos --}}
-
-@php
-    $newToken = Str::random(60); // Generar un nuevo token
-    $video->embed_token = $newToken; // Asignar el nuevo token al video
-    $video->save(); // Guardar el cambio en la base de datos
-
-    $playUrl = route('videos.play', ['video' => $video->id, 'token' => $newToken]);
-@endphp
-
-<div class="video-container">
-    <video controls autoplay>
-        <source src="{{ $playUrl }}" type="video/mp4">
-        Tu navegador no soporta la etiqueta video.
-    </video>
-</div>
-
-
+    <div class="video-container">
+        <video controls autoplay>
+            <source src="{{ route('videos.play', ['video' => $video->id]) }}" type="video/mp4">
+            Tu navegador no soporta la etiqueta video.
+        </video>
+    </div>
 </body>
 </html>
+

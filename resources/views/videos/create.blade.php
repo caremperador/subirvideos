@@ -138,18 +138,39 @@
                 xhr.onload = function() {
                     if (xhr.status === 200) {
                         const response = JSON.parse(xhr.responseText);
-                        videoInfo.textContent += ' - Subido con éxito.';
+                        videoInfo.innerHTML +=
+                            ' - <span class="text-green-500">Subido con éxito.</span>';
                         progressBar.remove(); // Elimina la barra de progreso
                         cancelButton.remove(); // Elimina el botón de cancelar
 
-                        // Agrega un margen entre la información y el botón
+                        // Botón para ver video embed
                         const embedButton = document.createElement('a');
                         embedButton.href = "/videos/" + response.id + "/embed";
                         embedButton.target = "_blank";
                         embedButton.className =
                             "bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg mt-2 inline-block";
-                        embedButton.textContent = "Ver Video Embed";
+                        embedButton.innerHTML = "<i class='fas fa-eye'></i> Ver Video Embed";
+
+                        // Botón para copiar enlace
+                        const copyButton = document.createElement('button');
+                        copyButton.className =
+                            "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg mt-2 ml-2 inline-block copy-button";
+                        copyButton.innerHTML = "<i class='fas fa-clipboard'></i> Copiar Enlace";
+                        copyButton.onclick = function() {
+                            navigator.clipboard.writeText(embedButton.href).then(() => {
+                                // Cambia el texto del botón
+                                copyButton.innerHTML =
+                                    "<i class='fas fa-check'></i> Enlace Copiado!";
+                                // Opcionalmente, restablece el texto después de un tiempo
+                                setTimeout(() => {
+                                    copyButton.innerHTML =
+                                        "<i class='fas fa-clipboard'></i> Copiar Enlace";
+                                }, 2000); // Cambia el texto de vuelta después de 2 segundos
+                            });
+                        };
+
                         videoContainer.appendChild(embedButton);
+                        videoContainer.appendChild(copyButton);
                     } else {
                         console.error('Error en la carga');
                     }
@@ -170,6 +191,23 @@
 
 
 
+<footer>
+    {{-- Verifica si hay un usuario autenticado --}}
+    @auth
+        {{-- Verifica si el usuario tiene el rol 'admin' --}}
+        @if(auth()->user()->hasRole('admin'))
+            <p>Bienvenido, administrador. Estás en el panel de control de admin.</p>
+        {{-- Verifica si el usuario tiene el rol 'uploader' --}}
+        @elseif(auth()->user()->hasRole('uploader'))
+            <p>Bienvenido, uploader. Puedes subir y gestionar tus videos aquí.</p>
+        @else
+            <p>Bienvenido a nuestro sitio.</p>
+        @endif
+    @else
+        <p>Bienvenido, por favor inicia sesión o regístrate.</p>
+    @endauth
+    {{-- Otros elementos del footer --}}
+</footer>
 
 </body>
 

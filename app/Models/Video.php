@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Video extends Model
 {
     use HasFactory;
+    
     protected $fillable = ['title', 'path', 'disk', 'embed_token', 'nombre', 'idioma', 'size'];
     /* protected $guarded = []; */
 }
