@@ -11,7 +11,7 @@
 
 <body class="bg-gray-100">
     <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6">Subir Video</h1>
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">Subir Videos!</h1>
         <a href="{{ route('videos.index') }}" target="_blank"
             class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg mb-4">
             <i class="fas fa-list-ul pr-1"></i> Lista de Videos
