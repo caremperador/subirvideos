@@ -82,7 +82,7 @@ class VideoController extends Controller
     {
         // Lógica para seleccionar un disco. Puede ser tan simple o compleja como necesites.
         // Por ejemplo, devolver un disco fijo o basarse en algún criterio:
-        return 'volume_ams3_01'; // o cualquier otro disco
+        return 'volume-ams3-01'; // o cualquier otro disco
     }
 
 

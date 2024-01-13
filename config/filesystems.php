@@ -44,9 +44,9 @@ return [
             'throw' => false,
         ],
 
-        'volume_ams3_01' => [
+        'volume-ams3-01' => [
             'driver' => 'local',
-            'root' => storage_path('app/public/volume_ams3_01'),
+            'root' => storage_path('app/public/volume-ams3-01'),
             'url' => env('APP_URL').'/storage',
             'visibility' => 'public',
             'throw' => false,
