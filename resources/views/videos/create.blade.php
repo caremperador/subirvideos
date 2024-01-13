@@ -14,7 +14,7 @@
         <h1 class="text-3xl font-bold text-gray-800 mb-6">Subir Videos!</h1>
         <a href="{{ route('videos.index') }}" target="_blank"
             class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg mb-4">
-            <i class="fas fa-list-ul pr-1"></i> Lista de Videos
+            <i class="fas fa-list-ul pr-1"></i> ir Lista de Videos
         </a>
 
         <div id="success-message" class="hidden bg-green-500 p-4 rounded-lg mb-6 text-white"></div>
