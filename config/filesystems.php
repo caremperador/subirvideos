@@ -46,11 +46,19 @@ return [
 
         'volume-ams3-01' => [
             'driver' => 'local',
-            'root' => storage_path('app/public/volume-ams3-01'),
-            'url' => env('APP_URL').'/storage',
+            'root' => '/mnt/volume_ams3_01',
+            'url' => env('APP_URL').'/volume_ams3_01',
             'visibility' => 'public',
             'throw' => false,
         ],
+        
+        'volume-ams3-02' => [
+            'driver' => 'local',
+            'root' => '/mnt/volume_ams3_02',
+            'url' => env('APP_URL').'/volume_ams3_02',
+            'visibility' => 'public',
+            'throw' => false,
+        ],     
 
         's3' => [
             'driver' => 's3',
