@@ -80,11 +80,24 @@ class VideoController extends Controller
 
     private function selectDisk()
     {
+        // Obtener el espacio libre de cada volumen
         $size1 = disk_free_space('/mnt/volume_ams3_01');
         $size2 = disk_free_space('/mnt/volume_ams3_02');
-        // Comparar el espacio disponible y seleccionar el disco
-        return ($size1 > $size2) ? 'volume-ams3-01' : 'volume-ams3-02';
+
+        // Utilizar un array asociativo para mantener los tamaños y los nombres de los discos
+        $sizes = [
+            'volume-ams3-01' => $size1,
+            'volume-ams3-02' => $size2
+        ];
+
+        // Ordenar el array por tamaño de forma descendente manteniendo la asociación de claves
+        arsort($sizes);
+
+        // Devolver la clave (nombre del disco) del primer elemento del array, que es el que tiene más espacio
+        reset($sizes); // asegurarse de que el puntero interno del array está al principio
+        return key($sizes);
     }
+
 
 
     // Método para eliminar un video

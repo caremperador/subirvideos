@@ -58,7 +58,15 @@ return [
             'url' => env('APP_URL').'/volume_ams3_02',
             'visibility' => 'public',
             'throw' => false,
-        ],     
+        ],
+         
+        'volume-ams3-03' => [
+            'driver' => 'local',
+            'root' => '/mnt/volume_ams3_03',
+            'url' => env('APP_URL').'/volume_ams3_03',
+            'visibility' => 'public',
+            'throw' => false,
+        ],      
 
         's3' => [
             'driver' => 's3',
