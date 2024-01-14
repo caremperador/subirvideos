@@ -80,9 +80,10 @@ class VideoController extends Controller
 
     private function selectDisk()
     {
-        // Lógica para seleccionar un disco. Puede ser tan simple o compleja como necesites.
-        // Por ejemplo, devolver un disco fijo o basarse en algún criterio:
-        return 'volume-ams3-01'; // o cualquier otro disco
+        $size1 = disk_free_space('/mnt/volume_ams3_01');
+        $size2 = disk_free_space('/mnt/volume_ams3_02');
+        // Comparar el espacio disponible y seleccionar el disco
+        return ($size1 > $size2) ? 'volume-ams3-01' : 'volume-ams3-02';
     }
 
 
@@ -100,7 +101,7 @@ class VideoController extends Controller
 
     public function embed(Video $video)
     {
-      /*   // Verifica el referente de la solicitud
+        /*   // Verifica el referente de la solicitud
         $referer = request()->headers->get('referer');
         $allowedReferers = ['http://localhost', 'http://134.209.87.255', 'https://134.209.87.255'];
 
