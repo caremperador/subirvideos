@@ -45,7 +45,8 @@ class VideoController extends Controller
         $espacioLibreDiscoGB = [
             'volume-ams3-01' => number_format(disk_free_space('/mnt/volume_ams3_01') / 1024 / 1024 / 1024, 2) . ' GB',
             'volume-ams3-02' => number_format(disk_free_space('/mnt/volume_ams3_02') / 1024 / 1024 / 1024, 2) . ' GB',
-            // Agrega líneas similares para otros discos si existen
+            'volume-ams3-03' => number_format(disk_free_space('/mnt/volume_ams3_03') / 1024 / 1024 / 1024, 2) . ' GB',
+            
         ];
 
         // Pasar los datos a la vista
