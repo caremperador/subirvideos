@@ -96,23 +96,30 @@
             </thead>
       
             <tbody class="divide-y divide-gray-100">
+
+                @foreach ($sumasPorDiscoGB as $disco => $tamaño)
               
-              @foreach ($sumasPorDiscoGB as $disco => $tamaño)
-                <tr>
-                  <td class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap">
-                    {{ $disco }}
-                  </td>
-                  <td class="px-4 py-2 text-right text-gray-500 whitespace-nowrap">
-                    {{ $tamaño }} GB
-                  </td>
-                  <td class="px-4 py-2 text-right text-gray-500 whitespace-nowrap">
-                    {{ $espacioLibreDiscoGB[$disco] }} GB
-                  </td>
-                </tr>
-              @endforeach
-      
-            </tbody>
-          </table>
+                  <tr class="hover:bg-gray-50">
+                    
+                    <td class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap">
+                      {{ $disco }}  
+                    </td>
+              
+                    <td class="px-4 py-2 text-right text-gray-500 whitespace-nowrap hover:text-purple-500">
+                      {{ $tamaño }} GB
+                    </td>
+              
+                    <td class="px-4 py-2 text-right text-gray-500 whitespace-nowrap">
+                      {{ $espacioLibreDiscoGB[$disco] }} GB
+                    </td>
+              
+                  </tr>
+              
+                @endforeach
+              
+              </tbody>
+              
+              </table>
       
         </div>
       
