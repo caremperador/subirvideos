@@ -75,33 +75,46 @@
         <div class="px-4 py-5 border-b border-gray-200 sm:px-6">
           <h2 class="text-lg leading-6 font-medium text-gray-900">
             Uso del Espacio en Discos
-          </h2>    
+          </h2>
         </div>
       
-        @foreach ($sumasPorDiscoGB as $disco => $tamaño)
+        <div class="max-w-full overflow-hidden bg-white shadow">
       
-          <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-            <div>
-              <dt class="text-sm font-medium text-gray-500">
-                {{ $disco }}
-              </dt>  
-            </div>
+          <table class="min-w-full text-sm divide-y divide-gray-200">
+            <thead>
+              <tr>
+                <th class="px-4 py-2 font-medium text-left text-gray-900 whitespace-nowrap">
+                  Servidor
+                </th>
+                <th class="px-4 py-2 font-medium text-right text-gray-900 whitespace-nowrap">
+                  Espacio Usado
+                </th>
+                <th class="px-4 py-2 font-medium text-right text-gray-900 whitespace-nowrap">
+                  Espacio Libre
+                </th>
+              </tr>
+            </thead>
       
-            <div class="text-right">
-              <dd class="text-sm font-medium text-gray-900">
-                {{ $tamaño }} GB  
-              </dd>
-            </div>
+            <tbody class="divide-y divide-gray-100">
+              
+              @foreach ($sumasPorDiscoGB as $disco => $tamaño)
+                <tr>
+                  <td class="px-4 py-2 font-medium text-gray-900 whitespace-nowrap">
+                    {{ $disco }}
+                  </td>
+                  <td class="px-4 py-2 text-right text-gray-500 whitespace-nowrap">
+                    {{ $tamaño }} GB
+                  </td>
+                  <td class="px-4 py-2 text-right text-gray-500 whitespace-nowrap">
+                    {{ $espacioLibreDiscoGB[$disco] }} GB
+                  </td>
+                </tr>
+              @endforeach
       
-            <div class="text-right">
-              <dd class="text-sm text-gray-500">
-               Espacio libre {{ $espacioLibreDiscoGB[$disco] }} GB
-              </dd>
-            </div>
+            </tbody>
+          </table>
       
-          </div>
-      
-        @endforeach
+        </div>
       
       </div>
     
