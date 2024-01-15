@@ -73,16 +73,31 @@
 
     {{-- lista de servidores --}}
     <div class="pt-4">
-        <div class="bg-white p-4 rounded-lg shadow-md">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Uso del Espacio en Discos</h2>
-            <ul class="list-disc pl-5 space-y-2">
+        <div class="container mx-auto">
+            <h2 class="text-2xl font-semibold text-gray-800 my-4 text-center">Uso del Espacio en Discos</h2>
+            <div class="flex flex-wrap -m-2">
                 @foreach ($sumasPorDiscoGB as $disco => $tamaño)
-                <li class="text-gray-700">{{ $disco }}: <span class="font-semibold">{{ $tamaño }}</span></li>
-                <li class="text-gray-600">Espacio libre: {{ $espacioLibreDiscoGB[$disco] }}</li>
-            @endforeach
-            </ul>
+                    <div class="w-full md:w-1/2 lg:w-1/3 p-2">
+                        <div class="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+                            <h3 class="text-lg font-semibold text-gray-700 mb-2">{{ $disco }}</h3>
+                            <p class="text-gray-600">Espacio Usado: <span
+                                    class="font-semibold">{{ $tamaño }}</span></p>
+                            <p class="text-gray-600">Espacio Libre: <span
+                                    class="font-semibold">{{ $espacioLibreDiscoGB[$disco] }}</span></p>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+                                @php
+                                    $totalSize = $tamaño + $espacioLibreDiscoGB[$disco];
+                                    $percentageUsed = ($tamaño / $totalSize) * 100;
+                                @endphp
+                                <div class="bg-blue-500 h-2.5 rounded-full" style="width: {{ $percentageUsed }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
         </div>
     </div>
+
 
 
     {{-- modificado --}}
@@ -191,23 +206,23 @@
 
 
 
-<footer>
-    {{-- Verifica si hay un usuario autenticado --}}
-    @auth
-        {{-- Verifica si el usuario tiene el rol 'admin' --}}
-        @if(auth()->user()->hasRole('admin'))
-            <p>Bienvenido, administrador. Estás en el panel de control de admin.</p>
-        {{-- Verifica si el usuario tiene el rol 'uploader' --}}
-        @elseif(auth()->user()->hasRole('uploader'))
-            <p>Bienvenido, uploader. Puedes subir y gestionar tus videos aquí.</p>
+    <footer>
+        {{-- Verifica si hay un usuario autenticado --}}
+        @auth
+            {{-- Verifica si el usuario tiene el rol 'admin' --}}
+            @if (auth()->user()->hasRole('admin'))
+                <p>Bienvenido, administrador. Estás en el panel de control de admin.</p>
+                {{-- Verifica si el usuario tiene el rol 'uploader' --}}
+            @elseif(auth()->user()->hasRole('uploader'))
+                <p>Bienvenido, uploader. Puedes subir y gestionar tus videos aquí.</p>
+            @else
+                <p>Bienvenido a nuestro sitio.</p>
+            @endif
         @else
-            <p>Bienvenido a nuestro sitio.</p>
-        @endif
-    @else
-        <p>Bienvenido, por favor inicia sesión o regístrate.</p>
-    @endauth
-    {{-- Otros elementos del footer --}}
-</footer>
+            <p>Bienvenido, por favor inicia sesión o regístrate.</p>
+        @endauth
+        {{-- Otros elementos del footer --}}
+    </footer>
 
 </body>
 
