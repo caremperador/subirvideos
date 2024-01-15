@@ -83,11 +83,13 @@ class VideoController extends Controller
         // Obtener el espacio libre de cada volumen
         $size1 = disk_free_space('/mnt/volume_ams3_01');
         $size2 = disk_free_space('/mnt/volume_ams3_02');
+        $size3 = disk_free_space('/mnt/volume_ams3_03');
 
         // Utilizar un array asociativo para mantener los tamaños y los nombres de los discos
         $sizes = [
             'volume-ams3-01' => $size1,
-            'volume-ams3-02' => $size2
+            'volume-ams3-02' => $size2,
+            'volume-ams3-03' => $size3
         ];
 
         // Ordenar el array por tamaño de forma descendente manteniendo la asociación de claves
