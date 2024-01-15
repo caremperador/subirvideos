@@ -31,18 +31,28 @@ class VideoController extends Controller
     // Muestra el formulario para subir videos
     public function create()
     {
-
         // Obtener la suma del tamaño de los archivos por disco
         $sumasPorDisco = Video::groupBy('disk')
             ->selectRaw('disk, sum(size) as totalSize')
             ->pluck('totalSize', 'disk');
 
-        // Convertir a GB
+        // Convertir a GB la suma de tamaños
         $sumasPorDiscoGB = $sumasPorDisco->map(function ($size) {
             return number_format($size / 1024 / 1024 / 1024, 2) . ' GB';
         });
 
-        return view('videos.create', ['sumasPorDiscoGB' => $sumasPorDiscoGB]);
+        // Obtener el espacio libre de cada volumen en GB
+        $espacioLibreDiscoGB = [
+            'volume-ams3-01' => number_format(disk_free_space('/mnt/volume_ams3_01') / 1024 / 1024 / 1024, 2) . ' GB',
+            'volume-ams3-02' => number_format(disk_free_space('/mnt/volume_ams3_02') / 1024 / 1024 / 1024, 2) . ' GB',
+            // Agrega líneas similares para otros discos si existen
+        ];
+
+        // Pasar los datos a la vista
+        return view('videos.create', [
+            'sumasPorDiscoGB' => $sumasPorDiscoGB,
+            'espacioLibreDiscoGB' => $espacioLibreDiscoGB
+        ]);
     }
 
 
