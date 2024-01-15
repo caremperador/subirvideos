@@ -106,11 +106,11 @@
                     </td>
               
                     <td class="px-4 py-2 text-right text-gray-500 whitespace-nowrap hover:text-purple-500">
-                      {{ $tamaño }} GB
+                      {{ $tamaño }} 
                     </td>
               
                     <td class="px-4 py-2 text-right text-gray-500 whitespace-nowrap">
-                      {{ $espacioLibreDiscoGB[$disco] }} GB
+                      {{ $espacioLibreDiscoGB[$disco] }} 
                     </td>
               
                   </tr>
@@ -125,7 +125,19 @@
       
       </div>
     
-
+      <script>
+        let rows = document.querySelectorAll('tbody tr');
+      
+        rows.forEach(row => {
+          row.addEventListener('mouseover', () => {
+            row.classList.add('bg-purple-50');
+          });
+          
+          row.addEventListener('mouseout', () => {  
+            row.classList.remove('bg-purple-50');
+          });
+        });
+      </script>
 
     {{-- modificado --}}
     <script>
