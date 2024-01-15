@@ -70,32 +70,18 @@
     </div>
 
 
-
-    {{-- lista de servidores --}}
-    <div class="pt-4">
-        <div class="container mx-auto">
-            <h2 class="text-2xl font-semibold text-gray-800 my-4 text-center">Uso del Espacio en Discos</h2>
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+ {{-- lista de servidores --}}
+ <div class="pt-4">
+    <div class="bg-white p-4 rounded-lg shadow-md">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Uso del Espacio en Discos</h2>
+        <ul class="list-disc pl-5 space-y-2">
             @foreach ($sumasPorDiscoGB as $disco => $tamaño)
-            {{-- Calcular el porcentaje de espacio utilizado --}}
-            @php
-            $espacioLibre = disk_free_space('/mnt/'.$disco); // Obtiene el espacio libre del disco
-            $espacioLibreGB = number_format($espacioLibre / 1024 / 1024 / 1024, 2);
-            $totalSize = $tamaño + $espacioLibreGB;
-            $percentageUsed = ($tamaño / $totalSize) * 100;
-            @endphp
-            <div class="bg-white p-4 rounded-lg shadow-md">
-            <h3 class="text-lg font-medium text-gray-700">{{ $disco }}</h3>
-            <p class="text-gray-600">Espacio utilizado: <span class="font-semibold">{{ $tamaño }} GB</span></p>
-            <p class="text-gray-600">Espacio libre: <span class="font-semibold">{{ $espacioLibreGB }} GB</span></p>
-            <div class="w-full bg-gray-200 rounded-full mt-2">
-            <div class="bg-blue-500 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: {{ $percentageUsed }}%"> {{ number_format($percentageUsed, 2) }}% usado</div>
-            </div>
-            </div>
-            @endforeach
-            </div>
-            </div>
-            </div>
+            <li class="text-gray-700">{{ $disco }}: <span class="font-semibold">{{ $tamaño }}</span></li>
+            <li class="text-gray-600">Espacio libre: {{ $espacioLibreDiscoGB[$disco] }}</li>
+        @endforeach
+        </ul>
+    </div>
+</div>
     
 
 
