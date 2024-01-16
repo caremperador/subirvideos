@@ -39,7 +39,7 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            'url' => env('APP_URL') . '/storage',
             'visibility' => 'public',
             'throw' => false,
         ],
@@ -47,26 +47,33 @@ return [
         'volume-ams3-01' => [
             'driver' => 'local',
             'root' => '/mnt/volume_ams3_01',
-            'url' => env('APP_URL').'/volume_ams3_01',
+            'url' => env('APP_URL') . '/volume_ams3_01',
             'visibility' => 'public',
             'throw' => false,
         ],
-        
+
         'volume-ams3-02' => [
             'driver' => 'local',
             'root' => '/mnt/volume_ams3_02',
-            'url' => env('APP_URL').'/volume_ams3_02',
+            'url' => env('APP_URL') . '/volume_ams3_02',
             'visibility' => 'public',
             'throw' => false,
         ],
-         
+
         'volume-ams3-03' => [
             'driver' => 'local',
             'root' => '/mnt/volume_ams3_03',
-            'url' => env('APP_URL').'/volume_ams3_03',
+            'url' => env('APP_URL') . '/volume_ams3_03',
             'visibility' => 'public',
             'throw' => false,
-        ],      
+        ],
+        'volume-ams3-04' => [
+            'driver' => 'local',
+            'root' => '/mnt/volume_ams3_04',
+            'url' => env('APP_URL') . '/volume_ams3_04',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
 
         's3' => [
             'driver' => 's3',
