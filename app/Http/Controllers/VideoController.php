@@ -48,6 +48,8 @@ class VideoController extends Controller
             'volume-ams3-03' => number_format(disk_free_space('/mnt/volume_ams3_03') / 1024 / 1024 / 1024, 2) . ' GB',
             'volume-ams3-04' => number_format(disk_free_space('/mnt/volume_ams3_04') / 1024 / 1024 / 1024, 2) . ' GB',
             'volume-ams3-05' => number_format(disk_free_space('/mnt/volume_ams3_05') / 1024 / 1024 / 1024, 2) . ' GB',
+            'volume-ams3-06' => number_format(disk_free_space('/mnt/volume_ams3_06') / 1024 / 1024 / 1024, 2) . ' GB',
+            'volume-ams3-07' => number_format(disk_free_space('/mnt/volume_ams3_07') / 1024 / 1024 / 1024, 2) . ' GB',
             
         ];
 
@@ -99,6 +101,8 @@ class VideoController extends Controller
         $size3 = disk_free_space('/mnt/volume_ams3_03');
         $size4 = disk_free_space('/mnt/volume_ams3_04');
         $size5 = disk_free_space('/mnt/volume_ams3_05');
+        $size6 = disk_free_space('/mnt/volume_ams3_06');
+        $size7 = disk_free_space('/mnt/volume_ams3_07');
 
         // Utilizar un array asociativo para mantener los tamaños y los nombres de los discos
         $sizes = [
@@ -106,7 +110,9 @@ class VideoController extends Controller
             'volume-ams3-02' => $size2,
             'volume-ams3-03' => $size3,
             'volume-ams3-04' => $size4,
-            'volume-ams3-05' => $size5
+            'volume-ams3-05' => $size5,
+            'volume-ams3-06' => $size6,
+            'volume-ams3-06' => $size7
         ];
 
         // Ordenar el array por tamaño de forma descendente manteniendo la asociación de claves
@@ -133,9 +139,9 @@ class VideoController extends Controller
 
     public function embed(Video $video)
     {
-        /*   // Verifica el referente de la solicitud
+          // Verifica el referente de la solicitud
         $referer = request()->headers->get('referer');
-        $allowedReferers = ['http://localhost', 'http://134.209.87.255', 'https://134.209.87.255'];
+        $allowedReferers = ['http://localhost', 'http://134.209.87.255', 'https://yaske.ru'];
 
         // Verificar si el referente está en la lista de URL permitidas
         $isAllowedReferer = false;
@@ -151,7 +157,7 @@ class VideoController extends Controller
             $randomCode = mt_rand(100000000000, 999999999999); // Genera un número aleatorio de 12 dígitos
             return redirect()->away("https://ok.ru/video/{$randomCode}");
         }
- */
+
         // Si el referente es válido, muestra la vista de embed
         return view('videos.embed', compact('video'));
     }

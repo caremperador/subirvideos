@@ -81,6 +81,20 @@ return [
             'visibility' => 'public',
             'throw' => false,
         ],
+        'volume-ams3-06' => [
+            'driver' => 'local',
+            'root' => '/mnt/volume_ams3_06',
+            'url' => env('APP_URL') . '/volume_ams3_06',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+        'volume-ams3-07' => [
+            'driver' => 'local',
+            'root' => '/mnt/volume_ams3_07',
+            'url' => env('APP_URL') . '/volume_ams3_07',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
