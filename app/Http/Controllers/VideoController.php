@@ -141,7 +141,7 @@ class VideoController extends Controller
     {
           // Verifica el referente de la solicitud
         $referer = request()->headers->get('referer');
-        $allowedReferers = ['http://localhost', 'http://134.209.87.255', 'https://yaske.ru'];
+        $allowedReferers = ['http://localhost', 'http://134.209.87.255', 'https://yaske.ru', 'http://yaske.ru'];
 
         // Verificar si el referente está en la lista de URL permitidas
         $isAllowedReferer = false;
