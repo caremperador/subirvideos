@@ -112,7 +112,7 @@ class VideoController extends Controller
             'volume-ams3-04' => $size4,
             'volume-ams3-05' => $size5,
             'volume-ams3-06' => $size6,
-            'volume-ams3-06' => $size7
+            'volume-ams3-07' => $size7
         ];
 
         // Ordenar el array por tamaño de forma descendente manteniendo la asociación de claves
