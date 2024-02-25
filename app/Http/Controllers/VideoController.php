@@ -50,6 +50,7 @@ class VideoController extends Controller
             'volume-ams3-05' => number_format(disk_free_space('/mnt/volume_ams3_05') / 1024 / 1024 / 1024, 2) . ' GB',
             'volume-ams3-06' => number_format(disk_free_space('/mnt/volume_ams3_06') / 1024 / 1024 / 1024, 2) . ' GB',
             'volume-ams3-07' => number_format(disk_free_space('/mnt/volume_ams3_07') / 1024 / 1024 / 1024, 2) . ' GB',
+            'volume-ams3-08' => number_format(disk_free_space('/mnt/volume_ams3_08') / 1024 / 1024 / 1024, 2) . ' GB',
             
         ];
 
@@ -103,6 +104,7 @@ class VideoController extends Controller
         $size5 = disk_free_space('/mnt/volume_ams3_05');
         $size6 = disk_free_space('/mnt/volume_ams3_06');
         $size7 = disk_free_space('/mnt/volume_ams3_07');
+        $size8 = disk_free_space('/mnt/volume_ams3_08');
 
         // Utilizar un array asociativo para mantener los tamaños y los nombres de los discos
         $sizes = [
@@ -112,7 +114,8 @@ class VideoController extends Controller
             'volume-ams3-04' => $size4,
             'volume-ams3-05' => $size5,
             'volume-ams3-06' => $size6,
-            'volume-ams3-07' => $size7
+            'volume-ams3-07' => $size7,
+            'volume-ams3-08' => $size8
         ];
 
         // Ordenar el array por tamaño de forma descendente manteniendo la asociación de claves
