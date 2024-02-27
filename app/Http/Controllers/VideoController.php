@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Video; // Importa el modelo Video
-use Illuminate\Http\Request; // Importa la clase Request para manejar solicitudes HTTP
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\Storage; // Importa la fachada Storage para operaciones de archivos
+use App\Models\Video; // Importa el modelo Video
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Illuminate\Http\Request; // Importa la clase Request para manejar solicitudes HTTP
+use Illuminate\Support\Facades\Storage; // Importa la fachada Storage para operaciones de archivos
 
 
 // Clase VideoController que extiende de Controller
@@ -51,7 +52,7 @@ class VideoController extends Controller
             'volume-ams3-06' => number_format(disk_free_space('/mnt/volume_ams3_06') / 1024 / 1024 / 1024, 2) . ' GB',
             'volume-ams3-07' => number_format(disk_free_space('/mnt/volume_ams3_07') / 1024 / 1024 / 1024, 2) . ' GB',
             'volume-ams3-08' => number_format(disk_free_space('/mnt/volume_ams3_08') / 1024 / 1024 / 1024, 2) . ' GB',
-            
+
         ];
 
         // Pasar los datos a la vista
@@ -139,11 +140,14 @@ class VideoController extends Controller
         return redirect()->route('videos.index')->with('success', 'Video eliminado con éxito.');
     }
 
-
-    public function embed(Video $video)
+    public function embed(Video $video, Request $request)
     {
-          // Verifica el referente de la solicitud
-        $referer = request()->headers->get('referer');
+        // Verifica el User-Agent de la solicitud
+        $userAgent = $request->header('User-Agent');
+        $isFromApp = Str::contains($userAgent, 'MiAppAndroidEspecial');
+
+        // Verifica el referente de la solicitud
+        $referer = $request->headers->get('referer');
         $allowedReferers = ['http://localhost', 'http://134.209.87.255', 'https://yaske.ru', 'http://yaske.ru'];
 
         // Verificar si el referente está en la lista de URL permitidas
@@ -155,14 +159,14 @@ class VideoController extends Controller
             }
         }
 
-        // Si el referente no es permitido, redirige a una URL externa con un código aleatorio
-        if (!$isAllowedReferer) {
-            $randomCode = mt_rand(100000000000, 999999999999); // Genera un número aleatorio de 12 dígitos
-            return redirect()->away("https://ok.ru/video/{$randomCode}");
+        // Si la solicitud viene de la aplicación o el referente está permitido, muestra la vista de embed
+        if ($isFromApp || $isAllowedReferer) {
+            return view('videos.embed', compact('video'));
         }
 
-        // Si el referente es válido, muestra la vista de embed
-        return view('videos.embed', compact('video'));
+        // Si el referente no es permitido y la solicitud no viene de la app, redirige a una URL externa con un código aleatorio
+        $randomCode = mt_rand(100000000000, 999999999999); // Genera un número aleatorio de 12 dígitos
+        return redirect()->away("https://ok.ru/video/{$randomCode}");
     }
 
 
