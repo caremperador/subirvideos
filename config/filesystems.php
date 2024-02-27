@@ -13,10 +13,15 @@ $volumes = [
     'volume-ams3-09' => '/mnt/volume_ams3_09',
 ];
 
-// Construye dinámicamente los discos de volúmenes
-$volumeDisks = [];
-foreach ($volumes as $name => $path) {
-    $volumeDisks[$name] = [
+// Filtra y construye dinámicamente los discos de volúmenes solo si existen.
+$volumeDisks = array_filter($volumes, function ($path) {
+    return file_exists($path);
+});
+
+// Transforma los volúmenes filtrados en la configuración de discos.
+$volumeDisksConfig = [];
+foreach ($volumeDisks as $name => $path) {
+    $volumeDisksConfig[$name] = [
         'driver' => 'local',
         'root' => $path,
         'url' => env('APP_URL') . "/storage",
@@ -24,7 +29,6 @@ foreach ($volumes as $name => $path) {
         'throw' => false,
     ];
 }
-
 return [
 
     'default' => env('FILESYSTEM_DISK', 'local'),
@@ -57,7 +61,7 @@ return [
             'throw' => false,
         ],
 
-    ], $volumeDisks), // Combina los discos definidos estáticamente con los dinámicos
+    ], $volumeDisksConfig), // Combina los discos definidos estáticamente con los dinámicos
 
     'links' => [
         public_path('storage') => storage_path('app/public'),
