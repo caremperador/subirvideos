@@ -1,34 +1,36 @@
 <?php
 
-return [
+// Define los volúmenes dinámicamente aquí. Podrías obtener estos desde una variable de entorno o configuración.
+$volumes = [
+    'volume-ams3-01' => '/mnt/volume_ams3_01',
+    'volume-ams3-02' => '/mnt/volume_ams3_02',
+    'volume-ams3-03' => '/mnt/volume_ams3_03',
+    'volume-ams3-04' => '/mnt/volume_ams3_04',
+    'volume-ams3-05' => '/mnt/volume_ams3_05',
+    'volume-ams3-06' => '/mnt/volume_ams3_06',
+    'volume-ams3-07' => '/mnt/volume_ams3_07',
+    'volume-ams3-08' => '/mnt/volume_ams3_08',
+    'volume-ams3-09' => '/mnt/volume_ams3_09',
+    'volume-ams3-10' => '/mnt/volume_ams3_10',
+];
 
-    /*
-    |--------------------------------------------------------------------------
-    | Default Filesystem Disk
-    |--------------------------------------------------------------------------
-    |
-    | Here you may specify the default filesystem disk that should be used
-    | by the framework. The "local" disk, as well as a variety of cloud
-    | based disks are available to your application. Just store away!
-    |
-    */
+// Construye dinámicamente los discos de volúmenes
+$volumeDisks = [];
+foreach ($volumes as $name => $path) {
+    $volumeDisks[$name] = [
+        'driver' => 'local',
+        'root' => $path,
+        'url' => env('APP_URL') . "/storage",
+        'visibility' => 'public',
+        'throw' => false,
+    ];
+}
+
+return [
 
     'default' => env('FILESYSTEM_DISK', 'local'),
 
-    /*
-    |--------------------------------------------------------------------------
-    | Filesystem Disks
-    |--------------------------------------------------------------------------
-    |
-    | Here you may configure as many filesystem "disks" as you wish, and you
-    | may even configure multiple disks of the same driver. Defaults have
-    | been set up for each driver as an example of the required values.
-    |
-    | Supported Drivers: "local", "ftp", "sftp", "s3"
-    |
-    */
-
-    'disks' => [
+    'disks' => array_merge([
 
         'local' => [
             'driver' => 'local',
@@ -44,64 +46,6 @@ return [
             'throw' => false,
         ],
 
-        'volume-ams3-01' => [
-            'driver' => 'local',
-            'root' => '/mnt/volume_ams3_01',
-            'url' => env('APP_URL') . '/volume_ams3_01',
-            'visibility' => 'public',
-            'throw' => false,
-        ],
-
-        'volume-ams3-02' => [
-            'driver' => 'local',
-            'root' => '/mnt/volume_ams3_02',
-            'url' => env('APP_URL') . '/volume_ams3_02',
-            'visibility' => 'public',
-            'throw' => false,
-        ],
-
-        'volume-ams3-03' => [
-            'driver' => 'local',
-            'root' => '/mnt/volume_ams3_03',
-            'url' => env('APP_URL') . '/volume_ams3_03',
-            'visibility' => 'public',
-            'throw' => false,
-        ],
-        'volume-ams3-04' => [
-            'driver' => 'local',
-            'root' => '/mnt/volume_ams3_04',
-            'url' => env('APP_URL') . '/volume_ams3_04',
-            'visibility' => 'public',
-            'throw' => false,
-        ],
-        'volume-ams3-05' => [
-            'driver' => 'local',
-            'root' => '/mnt/volume_ams3_05',
-            'url' => env('APP_URL') . '/volume_ams3_05',
-            'visibility' => 'public',
-            'throw' => false,
-        ],
-        'volume-ams3-06' => [
-            'driver' => 'local',
-            'root' => '/mnt/volume_ams3_06',
-            'url' => env('APP_URL') . '/volume_ams3_06',
-            'visibility' => 'public',
-            'throw' => false,
-        ],
-        'volume-ams3-07' => [
-            'driver' => 'local',
-            'root' => '/mnt/volume_ams3_07',
-            'url' => env('APP_URL') . '/volume_ams3_07',
-            'visibility' => 'public',
-            'throw' => false,
-        ],
-        'volume-ams3-08' => [
-            'driver' => 'local',
-            'root' => '/mnt/volume_ams3_08',
-            'url' => env('APP_URL') . '/volume_ams3_08',
-            'visibility' => 'public',
-            'throw' => false,
-        ],
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),
@@ -114,18 +58,7 @@ return [
             'throw' => false,
         ],
 
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Symbolic Links
-    |--------------------------------------------------------------------------
-    |
-    | Here you may configure the symbolic links that will be created when the
-    | `storage:link` Artisan command is executed. The array keys should be
-    | the locations of the links and the values should be their targets.
-    |
-    */
+    ], $volumeDisks), // Combina los discos definidos estáticamente con los dinámicos
 
     'links' => [
         public_path('storage') => storage_path('app/public'),
