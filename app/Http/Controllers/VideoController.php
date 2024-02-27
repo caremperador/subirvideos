@@ -144,12 +144,12 @@ class VideoController extends Controller
     {
         // Verifica el User-Agent de la solicitud
         $userAgent = $request->header('User-Agent');
-        $isFromApp = Str::contains($userAgent, 'MiAppAndroidEspecial');
-
+        $isFromApp = Str::contains($userAgent, 'MiAppAndroidEspecial/1.0');
+    
         // Verifica el referente de la solicitud
         $referer = $request->headers->get('referer');
         $allowedReferers = ['http://localhost', 'http://134.209.87.255', 'https://yaske.ru', 'http://yaske.ru'];
-
+    
         // Verificar si el referente está en la lista de URL permitidas
         $isAllowedReferer = false;
         foreach ($allowedReferers as $allowedReferer) {
@@ -158,12 +158,12 @@ class VideoController extends Controller
                 break;
             }
         }
-
+    
         // Si la solicitud viene de la aplicación o el referente está permitido, muestra la vista de embed
         if ($isFromApp || $isAllowedReferer) {
             return view('videos.embed', compact('video'));
         }
-
+    
         // Si el referente no es permitido y la solicitud no viene de la app, redirige a una URL externa con un código aleatorio
         $randomCode = mt_rand(100000000000, 999999999999); // Genera un número aleatorio de 12 dígitos
         return redirect()->away("https://ok.ru/video/{$randomCode}");
