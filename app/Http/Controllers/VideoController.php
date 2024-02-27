@@ -140,7 +140,7 @@ class VideoController extends Controller
     }
 
 
-    public function embed(Video $video, Request $request)
+    /*  public function embed(Video $video, Request $request)
     {
         // Verifica el referente de la solicitud
         $referer = $request->headers->get('referer');
@@ -163,8 +163,13 @@ class VideoController extends Controller
         // Si el referente no es permitido, redirige a una URL externa con un código aleatorio
         $randomCode = mt_rand(100000000000, 999999999999); // Genera un número aleatorio de 12 dígitos
         return redirect()->away("https://ok.ru/video/{$randomCode}");
-    }
+    } */
 
+    public function embed(Video $video)
+    {
+        // Sin verificar el referente, permitimos el acceso a la vista de embed directamente
+        return view('videos.embed', compact('video'));
+    }
 
 
 
