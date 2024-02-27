@@ -15,21 +15,20 @@ $volumes = [
 ];
 
 // Filtra y construye dinámicamente los discos de volúmenes solo si existen.
-$volumeDisks = array_filter($volumes, function ($path) {
-    return file_exists($path);
-});
-
-// Transforma los volúmenes filtrados en la configuración de discos.
 $volumeDisksConfig = [];
-foreach ($volumeDisks as $name => $path) {
-    $volumeDisksConfig[$name] = [
-        'driver' => 'local',
-        'root' => $path,
-        'url' => env('APP_URL') . "/storage",
-        'visibility' => 'public',
-        'throw' => false,
-    ];
+foreach ($volumes as $name => $path) {
+    if (file_exists($path)) {
+        $volumeDisksConfig[$name] = [
+            'driver' => 'local',
+            'root' => $path,
+            // Aquí ajustas la URL para que apunte al directorio correcto, si es necesario
+            'url' => env('APP_URL') . "/$name", // Asegúrate de que esta ruta sea accesible públicamente si es necesario
+            'visibility' => 'public',
+            'throw' => false,
+        ];
+    }
 }
+
 return [
 
     'default' => env('FILESYSTEM_DISK', 'local'),
