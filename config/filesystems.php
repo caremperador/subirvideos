@@ -1,5 +1,5 @@
 <?php
-
+//archivo filesystems.php
 // Define los volúmenes dinámicamente aquí. Podrías obtener estos desde una variable de entorno o configuración.
 $volumes = [
     'volume-ams3-01' => '/mnt/volume_ams3_01',
@@ -11,7 +11,6 @@ $volumes = [
     'volume-ams3-07' => '/mnt/volume_ams3_07',
     'volume-ams3-08' => '/mnt/volume_ams3_08',
     'volume-ams3-09' => '/mnt/volume_ams3_09',
-    'volume-ams3-10' => '/mnt/volume_ams3_10',
 ];
 
 // Construye dinámicamente los discos de volúmenes
