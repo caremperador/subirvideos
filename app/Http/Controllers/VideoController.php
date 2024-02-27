@@ -155,15 +155,20 @@ class VideoController extends Controller
             }
         }
 
-        // Permitir el acceso si no hay referente o si el referente está permitido
-        if (empty($referer) || $isAllowedReferer) {
+        // Verificar el User-Agent para identificar si la solicitud proviene de una WebView de Android
+        $userAgent = $request->header('User-Agent');
+        $isWebView = strpos($userAgent, 'wv') !== false;
+
+        // Permitir el acceso si no hay referente, si el referente está permitido o si es una WebView
+        if (empty($referer) || $isAllowedReferer || $isWebView) {
             return view('videos.embed', compact('video'));
         }
 
-        // Si el referente no es permitido, redirige a una URL externa con un código aleatorio
+        // Si el referente no es permitido y no es una WebView, redirige a una URL externa con un código aleatorio
         $randomCode = mt_rand(100000000000, 999999999999); // Genera un número aleatorio de 12 dígitos
         return redirect()->away("https://ok.ru/video/{$randomCode}");
     }
+
 
     /*  public function embed(Video $video)
     {
