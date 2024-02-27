@@ -11,6 +11,7 @@ $volumes = [
     'volume-ams3-07' => '/mnt/volume_ams3_07',
     'volume-ams3-08' => '/mnt/volume_ams3_08',
     'volume-ams3-09' => '/mnt/volume_ams3_09',
+    'volume-ams3-10' => '/mnt/volume_ams3_10',
 ];
 
 // Filtra y construye dinámicamente los discos de volúmenes solo si existen.
