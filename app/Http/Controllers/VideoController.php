@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Response;
 use App\Models\Video; // Importa el modelo Video
-use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\Http\Request; // Importa la clase Request para manejar solicitudes HTTP
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage; // Importa la fachada Storage para operaciones de archivos
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 
 // Clase VideoController que extiende de Controller
@@ -140,17 +139,14 @@ class VideoController extends Controller
         return redirect()->route('videos.index')->with('success', 'Video eliminado con éxito.');
     }
 
+
     public function embed(Video $video, Request $request)
     {
-        // Verifica el User-Agent de la solicitud
-        $userAgent = $request->header('User-Agent');
-        $isFromApp = Str::contains($userAgent, 'MiAppAndroidEspecial/1.0');
-    
         // Verifica el referente de la solicitud
         $referer = $request->headers->get('referer');
         $allowedReferers = ['http://localhost', 'http://134.209.87.255', 'https://yaske.ru', 'http://yaske.ru'];
-    
-        // Verificar si el referente está en la lista de URL permitidas
+
+        // Verificar si el referente está en la lista de URL permitidas o si no hay referente
         $isAllowedReferer = false;
         foreach ($allowedReferers as $allowedReferer) {
             if (strpos($referer, $allowedReferer) !== false) {
@@ -158,13 +154,13 @@ class VideoController extends Controller
                 break;
             }
         }
-    
-        // Si la solicitud viene de la aplicación o el referente está permitido, muestra la vista de embed
-        if ($isFromApp || $isAllowedReferer) {
+
+        // Permitir el acceso si no hay referente o si el referente está permitido
+        if (empty($referer) || $isAllowedReferer) {
             return view('videos.embed', compact('video'));
         }
-    
-        // Si el referente no es permitido y la solicitud no viene de la app, redirige a una URL externa con un código aleatorio
+
+        // Si el referente no es permitido, redirige a una URL externa con un código aleatorio
         $randomCode = mt_rand(100000000000, 999999999999); // Genera un número aleatorio de 12 dígitos
         return redirect()->away("https://ok.ru/video/{$randomCode}");
     }
