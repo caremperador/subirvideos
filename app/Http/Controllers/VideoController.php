@@ -31,24 +31,37 @@ class VideoController extends Controller
     // Muestra el formulario para subir videos
     public function create()
     {
-        $volumes = config('filesystems.disks');
-        $sumasPorDiscoGB = [];
-        $espacioLibreDiscoGB = [];
-    
-        foreach ($volumes as $name => $config) {
-            if (strpos($name, 'volume-ams3-') === 0) { // Verifica que el disco sea un volumen
-                $path = $config['root'];
-                $totalSize = Video::where('disk', $name)->sum('size'); // Suma el tamaño de los videos por disco
-                $freeSpace = disk_free_space($path);
-    
-                $sumasPorDiscoGB[$name] = number_format($totalSize / (1024 ** 3), 2) . ' GB';
-                $espacioLibreDiscoGB[$name] = number_format($freeSpace / (1024 ** 3), 2) . ' GB';
-            }
-        }
-    
-        return view('videos.create', compact('sumasPorDiscoGB', 'espacioLibreDiscoGB'));
+        // Obtener la suma del tamaño de los archivos por disco
+        $sumasPorDisco = Video::groupBy('disk')
+            ->selectRaw('disk, sum(size) as totalSize')
+            ->pluck('totalSize', 'disk');
+
+        // Convertir a GB la suma de tamaños
+        $sumasPorDiscoGB = $sumasPorDisco->map(function ($size) {
+            return number_format($size / 1024 / 1024 / 1024, 2) . ' GB';
+        });
+
+        // Obtener el espacio libre de cada volumen en GB
+        $espacioLibreDiscoGB = [
+            'volume-ams3-01' => number_format(disk_free_space('/mnt/volume_ams3_01') / 1024 / 1024 / 1024, 2) . ' GB',
+            'volume-ams3-02' => number_format(disk_free_space('/mnt/volume_ams3_02') / 1024 / 1024 / 1024, 2) . ' GB',
+            'volume-ams3-03' => number_format(disk_free_space('/mnt/volume_ams3_03') / 1024 / 1024 / 1024, 2) . ' GB',
+            'volume-ams3-04' => number_format(disk_free_space('/mnt/volume_ams3_04') / 1024 / 1024 / 1024, 2) . ' GB',
+            'volume-ams3-05' => number_format(disk_free_space('/mnt/volume_ams3_05') / 1024 / 1024 / 1024, 2) . ' GB',
+            'volume-ams3-06' => number_format(disk_free_space('/mnt/volume_ams3_06') / 1024 / 1024 / 1024, 2) . ' GB',
+            'volume-ams3-07' => number_format(disk_free_space('/mnt/volume_ams3_07') / 1024 / 1024 / 1024, 2) . ' GB',
+            'volume-ams3-08' => number_format(disk_free_space('/mnt/volume_ams3_08') / 1024 / 1024 / 1024, 2) . ' GB',
+            'volume-ams3-09' => number_format(disk_free_space('/mnt/volume_ams3_09') / 1024 / 1024 / 1024, 2) . ' GB',
+
+        ];
+
+        // Pasar los datos a la vista
+        return view('videos.create', [
+            'sumasPorDiscoGB' => $sumasPorDiscoGB,
+            'espacioLibreDiscoGB' => $espacioLibreDiscoGB
+        ]);
     }
-    
+
 
 
     // Guarda el video subido
@@ -84,20 +97,38 @@ class VideoController extends Controller
 
     private function selectDisk()
     {
-        $volumes = config('filesystems.disks');
-        $freeSpaces = [];
-    
-        foreach ($volumes as $name => $config) {
-            if (strpos($name, 'volume-ams3-') === 0) { // Verifica que el disco sea un volumen
-                $path = $config['root'];
-                $freeSpaces[$name] = disk_free_space($path);
-            }
-        }
-    
-        asort($freeSpaces); // Ordena por espacio libre de menor a mayor
-        return array_key_last($freeSpaces); // Retorna el nombre del disco con más espacio libre
+        // Obtener el espacio libre de cada volumen
+        $size1 = disk_free_space('/mnt/volume_ams3_01');
+        $size2 = disk_free_space('/mnt/volume_ams3_02');
+        $size3 = disk_free_space('/mnt/volume_ams3_03');
+        $size4 = disk_free_space('/mnt/volume_ams3_04');
+        $size5 = disk_free_space('/mnt/volume_ams3_05');
+        $size6 = disk_free_space('/mnt/volume_ams3_06');
+        $size7 = disk_free_space('/mnt/volume_ams3_07');
+        $size8 = disk_free_space('/mnt/volume_ams3_08');
+        $size9 = disk_free_space('/mnt/volume_ams3_09');
+
+        // Utilizar un array asociativo para mantener los tamaños y los nombres de los discos
+        $sizes = [
+            'volume-ams3-01' => $size1,
+            'volume-ams3-02' => $size2,
+            'volume-ams3-03' => $size3,
+            'volume-ams3-04' => $size4,
+            'volume-ams3-05' => $size5,
+            'volume-ams3-06' => $size6,
+            'volume-ams3-07' => $size7,
+            'volume-ams3-08' => $size8,
+            'volume-ams3-09' => $size9
+        ];
+
+        // Ordenar el array por tamaño de forma descendente manteniendo la asociación de claves
+        arsort($sizes);
+
+        // Devolver la clave (nombre del disco) del primer elemento del array, que es el que tiene más espacio
+        reset($sizes); // asegurarse de que el puntero interno del array está al principio
+        return key($sizes);
     }
-    
+
 
 
     // Método para eliminar un video
