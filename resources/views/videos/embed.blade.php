@@ -7,13 +7,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-black h-screen overflow-hidden flex justify-center items-center">
-    <video id="myVideo" class="w-full max-h-screen" controls>
+    <video id="myVideo" class="h-full w-full md:max-w-screen" controls>
         <source src="{{ route('videos.play', ['video' => $video->id]) }}" type="video/mp4">
         Your browser does not support the video tag.
     </video>
   
 <div id="resumeDialog" class="hidden absolute top-0 left-0 right-0 bottom-0 bg-black bg-opacity-50 flex justify-center items-center">
-    <div class="bg-black text-white p-4 rounded-lg text-center border border-gray-600 border-shadow-white">
+    <div class="bg-black bg-opacity-85 text-white p-4 rounded-lg text-center border border-gray-600 border-shadow-white">
         <p class="mb-4">¿Deseas retomar donde te quedaste (<span id="timePosition"></span>) o empezar de nuevo?</p>
         <button id="resume" class="bg-green-800 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2">Retomar</button>
         <button id="restart" class="bg-red-800 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Empezar de nuevo</button>
