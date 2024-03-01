@@ -15,21 +15,16 @@
             overflow: hidden; /* Elimina la barra de desplazamiento */
         }
         .video-container {
-            position: fixed; /* Se asegura de que el contenedor sea fijo y cubra toda la pantalla */
+            position: fixed; /* Cambiado de relative a fixed */
             top: 0;
             left: 0;
-            width: 100vw; /* 100% del ancho de la ventana gráfica */
-            height: 100vh; /* 100% del alto de la ventana gráfica */
-            display: flex; /* Usa flexbox para centrar el contenido */
-            justify-content: center; /* Centra horizontalmente */
-            align-items: center; /* Centra verticalmente */
-            background-color: black; /* Fondo negro para el contenedor, proporciona contraste */
+            width: 100%;
+            height: 100%;
         }
         .video-container video {
-            /* El máximo tamaño del video es el 100% del contenedor pero manteniendo su aspecto original */
-            max-width: 100%;
-            max-height: 100vh; /* Esto asegura que los subtítulos sean visibles en la pantalla */
-            object-fit: contain; /* Mantiene el aspecto completo del video */
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Asegura que el video cubra todo el espacio */
         }
     </style>
 </head>
@@ -42,3 +37,4 @@
     </div>
 </body>
 </html>
+
