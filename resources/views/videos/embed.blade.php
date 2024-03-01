@@ -20,47 +20,52 @@
     </div>
 </div>
 
-   <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const video = document.getElementById('myVideo');
-    const resumeDialog = document.getElementById('resumeDialog');
-    const timePosition = document.getElementById('timePosition'); // Elemento para mostrar la posición
-    const resumeButton = document.getElementById('resume');
-    const restartButton = document.getElementById('restart');
-
-    // Formatear el tiempo en HH:MM:SS
-    function formatTime(time) {
-      const hours = Math.floor(time / 3600).toString().padStart(2, '0');
-      const minutes = Math.floor((time % 3600) / 60).toString().padStart(2, '0');
-      const seconds = Math.floor(time % 60).toString().padStart(2, '0');
-      return `${hours}:${minutes}:${seconds}`;
-    }
-
-    // Intentar recuperar la última posición del video
-    const videoPosition = localStorage.getItem('videoPosition');
-    if (videoPosition) {
-      timePosition.textContent = formatTime(videoPosition); // Actualizar el texto con el tiempo formateado
-      resumeDialog.classList.remove('hidden'); // Mostrar el diálogo
-    }
-
-    resumeButton.addEventListener('click', function() {
-      video.currentTime = parseFloat(videoPosition);
-      video.play();
-      resumeDialog.classList.add('hidden'); // Ocultar el diálogo
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const videoId = "{{ $video->id }}"; // Obtener el ID del video desde Blade
+      const video = document.getElementById('myVideo');
+      const resumeDialog = document.getElementById('resumeDialog');
+      const timePosition = document.getElementById('timePosition');
+      const resumeButton = document.getElementById('resume');
+      const restartButton = document.getElementById('restart');
+  
+      // Formatear el tiempo en HH:MM:SS
+      function formatTime(time) {
+        const hours = Math.floor(time / 3600).toString().padStart(2, '0');
+        const minutes = Math.floor((time % 3600) / 60).toString().padStart(2, '0');
+        const seconds = Math.floor(time % 60).toString().padStart(2, '0');
+        return `${hours}:${minutes}:${seconds}`;
+      }
+  
+      // Clave única para localStorage usando el ID del video
+      const videoPositionKey = 'videoPosition-' + videoId;
+  
+      // Intentar recuperar la última posición del video
+      const videoPosition = localStorage.getItem(videoPositionKey);
+      if (videoPosition) {
+        timePosition.textContent = formatTime(videoPosition);
+        resumeDialog.classList.remove('hidden');
+      }
+  
+      resumeButton.addEventListener('click', function() {
+        video.currentTime = parseFloat(videoPosition);
+        video.play();
+        resumeDialog.classList.add('hidden');
+      });
+  
+      restartButton.addEventListener('click', function() {
+        localStorage.removeItem(videoPositionKey);
+        video.currentTime = 0;
+        video.play();
+        resumeDialog.classList.add('hidden');
+      });
+  
+      video.addEventListener('timeupdate', function () {
+        localStorage.setItem(videoPositionKey, video.currentTime);
+      });
     });
-
-    restartButton.addEventListener('click', function() {
-      localStorage.removeItem('videoPosition'); // Eliminar la posición guardada
-      video.currentTime = 0;
-      video.play();
-      resumeDialog.classList.add('hidden'); // Ocultar el diálogo
-    });
-
-    video.addEventListener('timeupdate', function () {
-      localStorage.setItem('videoPosition', video.currentTime);
-    });
-  });
-</script>
+  </script>
+  
 
 
 </body>
