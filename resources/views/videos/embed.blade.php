@@ -6,35 +6,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Embed - {{ $video->title }}</title>
     <!-- Incluir Tailwind CSS desde CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden; /* Elimina la barra de desplazamiento */
+      /* Estilos adicionales si necesitas mayor control sobre el video */
+      video {
+        /* Eliminar la altura máxima si es necesario para permitir el centrado vertical */
+        max-height: none;
+      }
+      @media (min-aspect-ratio: 16/9) {
+        video {
+          height: 100vh; /* Altura completa en pantallas anchas */
+          width: auto;  /* Permitir que el ancho sea automático */
         }
-        .video-container {
-            position: fixed; /* Cambiado de relative a fixed */
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+      }
+      @media (max-aspect-ratio: 16/9) {
+        video {
+          width: 100vw; /* Ancho completo en pantallas altas */
+          height: auto; /* Permitir que la altura sea automática */
         }
-        .video-container video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Asegura que el video cubra todo el espacio */
-        }
+      }
     </style>
 </head>
-<body class="h-full">
-    <div class="video-container">
-        <video controls autoplay>
-            <source src="{{ route('videos.play', ['video' => $video->id]) }}" type="video/mp4">
-            Tu navegador no soporta la etiqueta video.
-        </video>
+<body class="bg-black flex justify-center items-center h-screen overflow-hidden">
+    <!-- El contenedor flex centra el video en la pantalla -->
+    <div class="flex justify-center items-center w-full h-full">
+      <video controls autoplay playsinline class="max-w-full max-h-full">
+        <source src="{{ route('videos.play', ['video' => $video->id]) }}" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
     </div>
-</body>
+  </body>
 </html>
+
+
 
