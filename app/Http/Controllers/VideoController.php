@@ -24,7 +24,7 @@ class VideoController extends Controller
                 ->orWhere('title', 'LIKE', '%' . $search . '%'); // Puedes añadir más campos aquí
         }
 
-        $videos = $query->orderBy('id', 'desc')->paginate(5);
+        $videos = $query->orderBy('id', 'desc')->paginate(20);
 
         return view('videos.index', compact('videos'));
     }
