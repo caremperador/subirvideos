@@ -1,33 +1,24 @@
 <?php
-//archivo filesystems.php
-// Define los volúmenes dinámicamente aquí. Podrías obtener estos desde una variable de entorno o configuración.
-$volumes = [
-    'volume-ams3-01' => '/mnt/volume_ams3_01',
-    'volume-ams3-02' => '/mnt/volume_ams3_02',
-    'volume-ams3-03' => '/mnt/volume_ams3_03',
-    'volume-ams3-04' => '/mnt/volume_ams3_04',
-    'volume-ams3-05' => '/mnt/volume_ams3_05',
-    'volume-ams3-06' => '/mnt/volume_ams3_06',
-    'volume-ams3-07' => '/mnt/volume_ams3_07',
-    'volume-ams3-08' => '/mnt/volume_ams3_08',
-    'volume-ams3-09' => '/mnt/volume_ams3_09',
-    'volume-ams3-10' => '/mnt/volume_ams3_10',
-];
+// Número total de volúmenes esperados
+$totalVolumes = 50; // Ajusta este número según la cantidad de volúmenes que planeas tener
 
-// Filtra y construye dinámicamente los discos de volúmenes solo si existen.
+// Genera las configuraciones de los discos de volúmenes dinámicamente
 $volumeDisksConfig = [];
-foreach ($volumes as $name => $path) {
-    if (file_exists($path)) {
-        $volumeDisksConfig[$name] = [
+for ($i = 1; $i <= $totalVolumes; $i++) {
+    $volumeName = sprintf('volume-ams3-%02d', $i);
+    $volumePath = "/mnt/$volumeName";
+
+    if (file_exists($volumePath)) {
+        $volumeDisksConfig[$volumeName] = [
             'driver' => 'local',
-            'root' => $path,
-            // Aquí ajustas la URL para que apunte al directorio correcto, si es necesario
-            'url' => env('APP_URL') . "/$name", // Asegúrate de que esta ruta sea accesible públicamente si es necesario
+            'root' => $volumePath,
+            'url' => env('APP_URL') . "/storage/$volumeName",
             'visibility' => 'public',
             'throw' => false,
         ];
     }
 }
+
 
 return [
 
