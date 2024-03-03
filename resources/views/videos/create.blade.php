@@ -153,7 +153,7 @@
                 const xhr = new XMLHttpRequest();
         
                 xhr.open('POST', this.action, true);
-                xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+                xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('input[name="_token"]').value);
         
                 const videoContainer = document.createElement('div');
                 videoContainer.className = 'bg-white p-4 rounded-lg shadow-md mb-4';
@@ -170,6 +170,7 @@
                 const cancelButton = document.createElement('button');
                 cancelButton.textContent = 'Cancelar';
                 cancelButton.className = 'bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg mt-2';
+                cancelButton.type = 'button';
                 videoContainer.appendChild(cancelButton);
         
                 videosSubidosContainer.appendChild(videoContainer);
@@ -187,42 +188,23 @@
                         try {
                             const response = JSON.parse(xhr.responseText);
                             videoInfo.innerHTML += ' - <span class="text-green-500">Subido con éxito.</span>';
-                            const embedButton = document.createElement('a');
-                            embedButton.href = "/videos/" + response.id + "/embed";
-                            embedButton.target = "_blank";
-                            embedButton.className = "bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg mt-2 inline-block";
-                            embedButton.innerHTML = "<i class='fas fa-eye'></i> Ver Video Embed";
-                            videoContainer.appendChild(embedButton);
-        
-                            const copyButton = document.createElement('button');
-                            copyButton.className = "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg mt-2 ml-2 inline-block";
-                            copyButton.innerHTML = "<i class='fas fa-clipboard'></i> Copiar Enlace";
-                            copyButton.onclick = function() {
-                                navigator.clipboard.writeText(embedButton.href).then(() => {
-                                    copyButton.innerHTML = "<i class='fas fa-check'></i> Enlace Copiado!";
-                                    setTimeout(() => {
-                                        copyButton.innerHTML = "<i class='fas fa-clipboard'></i> Copiar Enlace";
-                                    }, 2000);
-                                });
-                            };
-                            videoContainer.appendChild(copyButton);
-        
                             progressBar.remove();
                             cancelButton.remove();
+                            // Procesa la respuesta exitosa aquí
                         } catch (error) {
-                            console.error('Error al procesar la respuesta:', error);
-                            videoInfo.innerHTML += ' - <span class="text-red-500">Error en la respuesta del servidor</span>';
+                            // Si la respuesta no es JSON válido
+                            videoInfo.innerHTML += ' - <span class="text-red-500">Error al procesar la respuesta</span>';
                             progressBar.className = 'bg-red-500';
                         }
                     } else {
-                        console.error('Error en la carga:', xhr.status, xhr.statusText);
+                        // Manejo de errores no relacionados con el JSON
                         videoInfo.innerHTML += ` - <span class="text-red-500">Error en la carga: ${xhr.status} ${xhr.statusText}</span>`;
                         progressBar.className = 'bg-red-500';
                     }
                 };
         
                 xhr.onerror = function() {
-                    console.error('Error en la red o la solicitud fue abortada');
+                    // Manejo de errores de red
                     videoInfo.innerHTML += ' - <span class="text-red-500">Error en la red o la solicitud fue abortada</span>';
                     progressBar.className = 'bg-red-500';
                 };
@@ -236,7 +218,9 @@
             });
         });
         </script>
-        
+
+
+
 
 
 <footer>
