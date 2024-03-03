@@ -142,7 +142,7 @@
       </script>
 
     {{-- modificado --}}
-    <script>
+  {{--   <script>
         document.addEventListener('DOMContentLoaded', function() {
             const uploadForm = document.getElementById('upload-form');
             const submitButton = document.getElementById('submit-button');
@@ -243,7 +243,7 @@
                 uploadForm.reset();
             });
         });
-    </script>
+    </script> --}}
 
 
 
