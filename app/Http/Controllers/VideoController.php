@@ -34,21 +34,21 @@ class VideoController extends Controller
         $volumes = config('filesystems.disks');
         $sumasPorDiscoGB = [];
         $espacioLibreDiscoGB = [];
-    
+
         foreach ($volumes as $name => $config) {
             if (strpos($name, 'volume-ams3-') === 0) { // Verifica que el disco sea un volumen
                 $path = $config['root'];
                 $totalSize = Video::where('disk', $name)->sum('size'); // Suma el tamaño de los videos por disco
                 $freeSpace = disk_free_space($path);
-    
+
                 $sumasPorDiscoGB[$name] = number_format($totalSize / (1024 ** 3), 2) . ' GB';
                 $espacioLibreDiscoGB[$name] = number_format($freeSpace / (1024 ** 3), 2) . ' GB';
             }
         }
-    
+
         return view('videos.create', compact('sumasPorDiscoGB', 'espacioLibreDiscoGB'));
     }
-    
+
 
 
     // Guarda el video subido
@@ -58,7 +58,7 @@ class VideoController extends Controller
         $request->validate([
             'nombre' => 'required|string|max:255',
             'idioma' => 'required|in:es_es,es_lat,in,in_sub',
-            'video' => 'required|file|mimes:mp4'
+            'video' => 'required|file'
         ]);
 
         // Selecciona un disco automáticamente o según la lógica de negocio
@@ -86,18 +86,18 @@ class VideoController extends Controller
     {
         $volumes = config('filesystems.disks');
         $freeSpaces = [];
-    
+
         foreach ($volumes as $name => $config) {
             if (strpos($name, 'volume-ams3-') === 0) { // Verifica que el disco sea un volumen
                 $path = $config['root'];
                 $freeSpaces[$name] = disk_free_space($path);
             }
         }
-    
+
         asort($freeSpaces); // Ordena por espacio libre de menor a mayor
         return array_key_last($freeSpaces); // Retorna el nombre del disco con más espacio libre
     }
-    
+
 
 
     // Método para eliminar un video
