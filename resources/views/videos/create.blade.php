@@ -190,21 +190,20 @@
                             videoInfo.innerHTML += ' - <span class="text-green-500">Subido con éxito.</span>';
                             progressBar.remove();
                             cancelButton.remove();
-                            // Procesa la respuesta exitosa aquí
+                            // Limpia el formulario
+                            uploadForm.reset();
+                            // Restablece cualquier campo adicional si es necesario
                         } catch (error) {
-                            // Si la respuesta no es JSON válido
                             videoInfo.innerHTML += ' - <span class="text-red-500">Error al procesar la respuesta</span>';
                             progressBar.className = 'bg-red-500';
                         }
                     } else {
-                        // Manejo de errores no relacionados con el JSON
                         videoInfo.innerHTML += ` - <span class="text-red-500">Error en la carga: ${xhr.status} ${xhr.statusText}</span>`;
                         progressBar.className = 'bg-red-500';
                     }
                 };
         
                 xhr.onerror = function() {
-                    // Manejo de errores de red
                     videoInfo.innerHTML += ' - <span class="text-red-500">Error en la red o la solicitud fue abortada</span>';
                     progressBar.className = 'bg-red-500';
                 };
@@ -218,7 +217,7 @@
             });
         });
         </script>
-
+        
 
 
 
