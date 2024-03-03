@@ -145,36 +145,44 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const uploadForm = document.getElementById('upload-form');
+            const submitButton = document.getElementById('submit-button');
             const videosSubidosContainer = document.getElementById('videos-subidos');
-        
+
             uploadForm.addEventListener('submit', function(e) {
                 e.preventDefault();
+
+                // Captura los valores de nombre e idioma del formulario
+                const nombre = document.getElementById('nombre').value;
+                const idiomaSelect = document.getElementById('idioma');
+                const idioma = idiomaSelect.options[idiomaSelect.selectedIndex].text;
+
                 const formData = new FormData(this);
                 const xhr = new XMLHttpRequest();
-        
+
                 xhr.open('POST', this.action, true);
-                xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('input[name="_token"]').value);
-        
+                xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
+
+                // Crear elementos para mostrar la subida del video
                 const videoContainer = document.createElement('div');
                 videoContainer.className = 'bg-white p-4 rounded-lg shadow-md mb-4';
-        
+
                 const videoInfo = document.createElement('p');
-                videoInfo.textContent = `Nombre: ${document.getElementById('nombre').value} - Idioma: ${document.getElementById('idioma').options[document.getElementById('idioma').selectedIndex].text}`;
+                videoInfo.textContent = `Nombre: ${nombre} - Idioma: ${idioma}`;
                 videoContainer.appendChild(videoInfo);
-        
+
                 const progressBar = document.createElement('div');
                 progressBar.className = 'bg-blue-500 text-xs leading-none py-1 text-center text-white';
                 progressBar.style.width = '0%';
                 videoContainer.appendChild(progressBar);
-        
+
                 const cancelButton = document.createElement('button');
                 cancelButton.textContent = 'Cancelar';
-                cancelButton.className = 'bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg mt-2';
-                cancelButton.type = 'button';
+                cancelButton.className =
+                    'bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg mt-2';
                 videoContainer.appendChild(cancelButton);
-        
+
                 videosSubidosContainer.appendChild(videoContainer);
-        
+
                 xhr.upload.onprogress = function(e) {
                     if (e.lengthComputable) {
                         const percentage = (e.loaded / e.total) * 100;
@@ -182,43 +190,60 @@
                         progressBar.textContent = `${percentage.toFixed(0)}%`;
                     }
                 };
-        
+
                 xhr.onload = function() {
                     if (xhr.status === 200) {
-                        try {
-                            const response = JSON.parse(xhr.responseText);
-                            videoInfo.innerHTML += ' - <span class="text-green-500">Subido con éxito.</span>';
-                            progressBar.remove();
-                            cancelButton.remove();
-                            // Limpia el formulario
-                            uploadForm.reset();
-                            // Restablece cualquier campo adicional si es necesario
-                        } catch (error) {
-                            videoInfo.innerHTML += ' - <span class="text-red-500">Error al procesar la respuesta</span>';
-                            progressBar.className = 'bg-red-500';
-                        }
+                        const response = JSON.parse(xhr.responseText);
+                        videoInfo.innerHTML +=
+                            ' - <span class="text-green-500">Subido con éxito.</span>';
+                        progressBar.remove(); // Elimina la barra de progreso
+                        cancelButton.remove(); // Elimina el botón de cancelar
+
+                        // Botón para ver video embed
+                        const embedButton = document.createElement('a');
+                        embedButton.href = "/videos/" + response.id + "/embed";
+                        embedButton.target = "_blank";
+                        embedButton.className =
+                            "bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg mt-2 inline-block";
+                        embedButton.innerHTML = "<i class='fas fa-eye'></i> Ver Video Embed";
+
+                        // Botón para copiar enlace
+                        const copyButton = document.createElement('button');
+                        copyButton.className =
+                            "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg mt-2 ml-2 inline-block copy-button";
+                        copyButton.innerHTML = "<i class='fas fa-clipboard'></i> Copiar Enlace";
+                        copyButton.onclick = function() {
+                            navigator.clipboard.writeText(embedButton.href).then(() => {
+                                // Cambia el texto del botón
+                                copyButton.innerHTML =
+                                    "<i class='fas fa-check'></i> Enlace Copiado!";
+                                // Opcionalmente, restablece el texto después de un tiempo
+                                setTimeout(() => {
+                                    copyButton.innerHTML =
+                                        "<i class='fas fa-clipboard'></i> Copiar Enlace";
+                                }, 2000); // Cambia el texto de vuelta después de 2 segundos
+                            });
+                        };
+
+                        videoContainer.appendChild(embedButton);
+                        videoContainer.appendChild(copyButton);
                     } else {
-                        videoInfo.innerHTML += ` - <span class="text-red-500">Error en la carga: ${xhr.status} ${xhr.statusText}</span>`;
-                        progressBar.className = 'bg-red-500';
+                        console.error('Error en la carga');
                     }
                 };
-        
-                xhr.onerror = function() {
-                    videoInfo.innerHTML += ' - <span class="text-red-500">Error en la red o la solicitud fue abortada</span>';
-                    progressBar.className = 'bg-red-500';
-                };
-        
+
                 cancelButton.addEventListener('click', function() {
-                    xhr.abort();
-                    videoContainer.remove();
+                    xhr.abort(); // Aborta la solicitud AJAX
+                    videoContainer.remove(); // Elimina el contenedor del video
                 });
-        
+
                 xhr.send(formData);
+
+                // Resetear campos del formulario para nueva subida
+                uploadForm.reset();
             });
         });
-        </script>
-        
-
+    </script>
 
 
 
