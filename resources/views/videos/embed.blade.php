@@ -27,34 +27,15 @@
         </div>
     </div>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const video = document.getElementById('myVideo');
-
-            // Función para intentar reproducir el video
-            function tryAutoplayVideo() {
-                video.play().then(() => {
-                    console.log("Video playback started successfully.");
-                    // Marcar en sessionStorage que el video ha comenzado a reproducirse
-                    sessionStorage.setItem('videoStarted', 'true');
-                }).catch(error => {
-                    console.error("Autoplay was prevented.", error);
-                });
-            }
-
-            // Verificar si el video ya comenzó a reproducirse en esta sesión
-            const videoStarted = sessionStorage.getItem('videoStarted') === 'true';
-
-            // Intentar autoplay solo si el video no ha comenzado a reproducirse en esta sesión
-            if (!videoStarted) {
-                tryAutoplayVideo();
-            }
-
-            // Escuchar el evento de 'play' para manejar casos en los que el usuario da play manualmente
-            video.addEventListener('play', () => {
-                sessionStorage.setItem('videoStarted', 'true');
-            });
-        });
-    </script>
+      document.addEventListener('DOMContentLoaded', function() {
+          const video = document.getElementById('myVideo');
+          video.muted = true; // Asegúrate de que el video esté silenciado.
+          video.play().catch(error => {
+              console.error("Autoplay was prevented.", error);
+              // Aquí puedes mostrar algún UI que invite al usuario a interactuar para reproducir el video.
+          });
+      });
+      </script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
