@@ -29,7 +29,7 @@
     <script>
       document.addEventListener('DOMContentLoaded', function() {
           const video = document.getElementById('myVideo');
-          video.muted = true; // Asegúrate de que el video esté silenciado.
+          video.muted = false; // Asegúrate de que el video esté silenciado.
           video.play().catch(error => {
               console.error("Autoplay was prevented.", error);
               // Aquí puedes mostrar algún UI que invite al usuario a interactuar para reproducir el video.
