@@ -21,7 +21,7 @@ Route::post('/videos', [VideoController::class, 'store'])->name('videos.store');
 Route::get('/videos', [VideoController::class, 'index'])->name('videos.index')->middleware(['auth', 'ensure_role:admin,uploader']);
 Route::delete('/videos/{video}', [VideoController::class, 'destroy'])->name('videos.destroy')->middleware('auth');
 Route::get('/videos/{video}/embed', [VideoController::class, 'embed'])->name('videos.embed');
-Route::get('/videos/{video}/play', [VideoController::class, 'play'])->name('videos.play');
+Route::get('/videos/{video}/play', [VideoController::class, 'play'])->name('videos.play')->middleware('auth');
 
 
 // En tu archivo de rutas web.php o routes/web.php
